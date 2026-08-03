@@ -1,0 +1,374 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AttendAI · Student Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="/static/css/style.css" />
+<link rel="stylesheet" href="/static/css/chatbot.css">
+</head>
+<body class="is-app-shell">
+
+<div class="ledger-bg" aria-hidden="true"></div>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="sidebar__brand"><span class="brand__mark">A</span><span>AttendAI</span></div>
+
+    <nav class="sidebar__nav">
+      <a href="#" class="sidebar__link is-active" data-nav-link data-page="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>
+        Dashboard
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4 20c1.6-3.6 5-5.5 8-5.5s6.4 1.9 8 5.5"/></svg>
+        Profile
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="reports">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5a1 1 0 0 1 1-1h9l6 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M14 4v5h5M8 13h8M8 16h5"/></svg>
+        Reports
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="timetable">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v4M16 4v4"/></svg>
+        Timetable
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="tasks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Tasks
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="activities">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Other Activities
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="marks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 15l4-6 4 3 5-7"/></svg>
+        Marks
+      </a>
+
+      <p class="sidebar__label">Coming soon</p>
+      <a href="#" class="sidebar__link" data-nav-link>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/></svg>
+        Leave Management <span class="tag">Soon</span>
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        Notifications <span class="tag">Soon</span>
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21c0-3.3-3.6-6-8-6s-8 2.7-8 6"/><circle cx="12" cy="7" r="4"/></svg>
+        AI Chatbot <span class="tag">Soon</span>
+      </a>
+    </nav>
+
+    <div class="sidebar__foot">
+      <a href="/" class="sidebar__link" id="logoutBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Log out
+      </a>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <div>
+        <h1 id="pageTitle">Welcome back, <span id="dashName">there</span></h1>
+        <p id="pageSubtitle">Learner sign-in &middot; <span id="dashDate"></span></p>
+      </div>
+      <div class="app-topbar__right">
+        <span class="date-chip" id="statusChip">STATUS · Present today</span>
+        <div class="profile-chip" id="profileChip">
+          <span class="profile-chip__avatar" id="profileChipAvatar">S</span>
+          <span class="profile-chip__text">
+            <span class="profile-chip__name" id="profileChipName">Student</span>
+            <span class="profile-chip__role">Student</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PAGE: Dashboard ================= -->
+    <div data-page="dashboard" class="is-page-active">
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-card__label">This month</div><div class="stat-card__value present">92%</div><div class="stat-card__delta">22 of 24 days present</div></div>
+        <div class="stat-card"><div class="stat-card__label">Current streak</div><div class="stat-card__value">6 days</div><div class="stat-card__delta">Personal best: 14 days</div></div>
+        <div class="stat-card"><div class="stat-card__label">Classes today</div><div class="stat-card__value">5</div><div class="stat-card__delta">Next: Physics · 10:30 AM</div></div>
+        <div class="stat-card"><div class="stat-card__label">Leaves left</div><div class="stat-card__value">4</div><div class="stat-card__delta">out of 12 this term</div></div>
+      </div>
+
+      <div class="panel-grid">
+        <div class="panel">
+          <div class="panel__head"><h2>Weekly attendance</h2><span>Mon – Sun</span></div>
+          <div class="bar-chart" id="barChart"></div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Recent activity</h2><span>Live</span></div>
+          <div class="activity-list" id="activityList"></div>
+        </div>
+      </div>
+
+      <div class="table-panel">
+        <div class="panel__head"><h2>My attendance log</h2><span>Last 5 classes</span></div>
+        <table class="data-table">
+          <thead><tr><th>Subject</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Mathematics</td><td>29 Jul</td><td><span class="status-pill present">Present</span></td></tr>
+            <tr><td>Physics</td><td>29 Jul</td><td><span class="status-pill present">Present</span></td></tr>
+            <tr><td>Chemistry</td><td>28 Jul</td><td><span class="status-pill absent">Absent</span></td></tr>
+            <tr><td>English</td><td>28 Jul</td><td><span class="status-pill present">Present</span></td></tr>
+            <tr><td>Computer Science</td><td>27 Jul</td><td><span class="status-pill present">Present</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Dashboard ================= -->
+
+    <!-- ================= PAGE: Profile ================= -->
+    <div data-page="profile">
+      <div class="panel-grid" style="grid-template-columns:0.7fr 1.3fr;">
+        <div class="panel" style="text-align:center;">
+          <div style="width:84px;height:84px;border-radius:50%;background:rgba(255,185,55,.14);color:var(--color-amber);display:flex;align-items:center;justify-content:center;margin:0 auto var(--space-3);font-family:var(--font-display);font-size:1.7rem;font-weight:600;" id="profileAvatar">S</div>
+          <h2 style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:600;" id="profileName">Student Name</h2>
+          <p style="color:var(--color-paper-dim);font-size:var(--fs-sm);margin-top:.25rem;" id="profileIdLine">ID · —</p>
+          <div class="date-chip" style="margin-top:var(--space-3);display:inline-flex;">ROLE · Student</div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Details</h2><span>On file</span></div>
+          <table class="data-table">
+            <tbody>
+              <tr><td style="color:var(--color-paper-dim);">Department</td><td id="profileDept">Grade 11 · Section B</td></tr>
+              <tr><td style="color:var(--color-paper-dim);">Email</td><td id="profileEmail">—</td></tr>
+              <tr><td style="color:var(--color-paper-dim);">Phone</td><td>+91 98xxx xxx21</td></tr>
+              <tr><td style="color:var(--color-paper-dim);">Joined</td><td>August 2023</td></tr>
+              <tr><td style="color:var(--color-paper-dim);">Status</td><td><span class="status-pill present">Active</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Profile ================= -->
+
+    <!-- ================= PAGE: Reports ================= -->
+    <div data-page="reports">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-card__label">This term</div><div class="stat-card__value present">89%</div><div class="stat-card__delta">Attendance rate</div></div>
+        <div class="stat-card"><div class="stat-card__label">Present days</div><div class="stat-card__value">96</div><div class="stat-card__delta">out of 108</div></div>
+        <div class="stat-card"><div class="stat-card__label">Absent days</div><div class="stat-card__value absent">12</div><div class="stat-card__delta">4 excused</div></div>
+        <div class="stat-card"><div class="stat-card__label">Best week</div><div class="stat-card__value">100%</div><div class="stat-card__delta">Week of 14 Jul</div></div>
+      </div>
+      <div class="table-panel">
+        <div class="panel__head">
+          <h2>Monthly breakdown</h2>
+          <button type="button" class="btn btn-ghost" id="downloadReportBtn" style="padding:.4rem .9rem;font-size:var(--fs-xs);">Download CSV</button>
+        </div>
+        <table class="data-table" id="reportTable">
+          <thead><tr><th>Month</th><th>Present</th><th>Absent</th><th>Rate</th></tr></thead>
+          <tbody>
+            <tr><td>March</td><td>21</td><td>1</td><td><span class="status-pill present">95%</span></td></tr>
+            <tr><td>April</td><td>19</td><td>3</td><td><span class="status-pill present">86%</span></td></tr>
+            <tr><td>May</td><td>18</td><td>4</td><td><span class="status-pill pending">82%</span></td></tr>
+            <tr><td>June</td><td>20</td><td>2</td><td><span class="status-pill present">91%</span></td></tr>
+            <tr><td>July</td><td>18</td><td>2</td><td><span class="status-pill present">90%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Reports ================= -->
+
+    <!-- ================= PAGE: Timetable ================= -->
+    <div data-page="timetable">
+      <div class="table-panel">
+        <div class="panel__head"><h2>Weekly timetable</h2><span>Mon – Fri</span></div>
+        <table class="data-table">
+          <thead><tr><th>Time</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th></tr></thead>
+          <tbody id="timetableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Timetable ================= -->
+
+    <!-- ================= PAGE: Tasks ================= -->
+    <div data-page="tasks">
+      <div class="table-panel">
+        <div class="panel__head"><h2>Assigned tasks</h2><span id="taskCountLabel">—</span></div>
+        <div id="taskList"></div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Tasks ================= -->
+
+    <!-- ================= PAGE: Activities ================= -->
+    <div data-page="activities">
+      <div class="panel-grid">
+        <div class="panel">
+          <div class="panel__head"><h2>Announcements & Events</h2><span>Latest</span></div>
+          <div class="activity-list" id="announcementsList"></div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Extra-curricular</h2><span>Clubs & sports</span></div>
+          <div class="activity-list" id="extracurricularList"></div>
+        </div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Activities ================= -->
+
+    <!-- ================= PAGE: Marks ================= -->
+    <div data-page="marks">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-card__label">Overall percentage</div><div class="stat-card__value present" id="marksOverallPct">—</div><div class="stat-card__delta">Across all subjects</div></div>
+        <div class="stat-card"><div class="stat-card__label">Overall grade</div><div class="stat-card__value" id="marksOverallGrade">—</div><div class="stat-card__delta">Current term</div></div>
+        <div class="stat-card"><div class="stat-card__label">Best subject</div><div class="stat-card__value" id="marksBestSubject">—</div><div class="stat-card__delta" id="marksBestScore">—</div></div>
+        <div class="stat-card"><div class="stat-card__label">Needs attention</div><div class="stat-card__value absent" id="marksWorstSubject">—</div><div class="stat-card__delta" id="marksWorstScore">—</div></div>
+      </div>
+      <div class="table-panel">
+        <div class="panel__head"><h2>Subject-wise marks</h2><span>Current term</span></div>
+        <table class="data-table" id="marksTable">
+          <thead><tr><th>Subject</th><th>Marks obtained</th><th>Max marks</th><th>Percentage</th><th>Grade</th></tr></thead>
+          <tbody id="marksTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Marks ================= -->
+
+  </main>
+</div>
+<!-- ================= CHATBOT ================= -->
+
+<button id="chatToggle" class="chat-toggle">
+    💬
+</button>
+
+<div id="chatBox" class="chat-box">
+
+    <div class="chat-header">
+        🤖 AttendAI Assistant
+    </div>
+
+    <div class="chat-body">
+
+        <div class="bot-message">
+            👋 Hello!
+            <br>
+            I am your AttendAI Assistant.
+        </div>
+
+    </div>
+
+<div class="chat-footer">
+
+    <input
+        type="text"
+        id="chatInput"
+        placeholder="Type your question..."
+    >
+
+    <button id="sendBtn">
+        Send
+    </button>
+
+    <button id="micBtn" class="mic-btn">
+        🎤
+    </button>
+
+</div>
+</div>
+
+<!-- ================= END CHATBOT ================= -->
+
+<script>window.ATTENDAI_ROLE = "student";</script>
+<script src="/static/js/dashboard.js"></script>
+<script src="/static/js/chatbot.js"></script>
+</body>
+</html>
+=======
+USE student_management; --
+========================================================= -- STEP 1: Add
+username & password columns to students table -- (Skip this step if columns
+already exist) -- =========================================================
+ALTER TABLE students ADD COLUMN username VARCHAR(50) UNIQUE AFTER email, ADD
+COLUMN password VARCHAR(255) NOT NULL DEFAULT '' AFTER username; --
+========================================================= -- STEP 2: Insert all
+25 students with full data + login credentials -- username = roll_no -- password
+= SHA2(roll_no + '@' + birth_year, 256) -- (default password students should
+change after first login, -- e.g. R001's default password is: R001@2009) --
+========================================================= INSERT INTO students
+(roll_no, name, dob, gender, class, section, phone, email, address,
+admission_date, father_name, mother_name, username, password) VALUES ('R001',
+'Aarav Jain', '2009-03-24', 'Male', '7', 'A', '9181960013',
+'aarav.jain1@example.com', 'Jodhpur, Rajasthan', '2024-06-07', 'Manoj Jain',
+'Sunita Jain', 'R001', SHA2('R001@2009', 256)), ('R002', 'Ishita Reddy',
+'2006-01-25', 'Female', '10', 'B', '9265423511', 'ishita.reddy2@example.com',
+'Ajmer, Rajasthan', '2024-05-20', 'Anil Reddy', 'Geeta Reddy', 'R002',
+SHA2('R002@2006', 256)), ('R003', 'Ananya Reddy', '2006-07-03', 'Female', '10',
+'A', '9849593103', 'ananya.reddy3@example.com', 'Udaipur, Rajasthan',
+'2024-04-13', 'Ramesh Reddy', 'Rekha Reddy', 'R003', SHA2('R003@2006', 256)),
+('R004', 'Tanya Chauhan', '2009-06-07', 'Female', '7', 'B', '9419283276',
+'tanya.chauhan4@example.com', 'Udaipur, Rajasthan', '2024-05-27', 'Suresh
+Chauhan', 'Poonam Chauhan', 'R004', SHA2('R004@2009', 256)), ('R005', 'Reyansh
+Verma', '2008-05-03', 'Male', '8', 'B', '9395376724',
+'reyansh.verma5@example.com', 'Jodhpur, Rajasthan', '2024-06-09', 'Sanjay
+Verma', 'Anita Verma', 'R005', SHA2('R005@2008', 256)), ('R006', 'Siya Joshi',
+'2008-03-17', 'Female', '8', 'A', '9710122691', 'siya.joshi6@example.com',
+'Ajmer, Rajasthan', '2024-06-09', 'Manoj Joshi', 'Kavita Joshi', 'R006',
+SHA2('R006@2008', 256)), ('R007', 'Aditya Bhatt', '2008-02-10', 'Male', '8',
+'B', '9627048281', 'aditya.bhatt7@example.com', 'Udaipur, Rajasthan',
+'2024-04-12', 'Manoj Bhatt', 'Rekha Bhatt', 'R007', SHA2('R007@2008', 256)),
+('R008', 'Shaurya Menon', '2010-08-01', 'Male', '6', 'B', '9154303911',
+'shaurya.menon8@example.com', 'Ajmer, Rajasthan', '2024-04-05', 'Ramesh Menon',
+'Anita Menon', 'R008', SHA2('R008@2010', 256)), ('R009', 'Navya Yadav',
+'2008-04-18', 'Female', '8', 'B', '9346578713', 'navya.yadav9@example.com',
+'Jodhpur, Rajasthan', '2024-06-18', 'Anil Yadav', 'Sunita Yadav', 'R009',
+SHA2('R009@2008', 256)), ('R010', 'Om Agarwal', '2010-12-21', 'Male', '6', 'A',
+'9031051834', 'om.agarwal10@example.com', 'Ajmer, Rajasthan', '2024-06-19',
+'Manoj Agarwal', 'Rekha Agarwal', 'R010', SHA2('R010@2010', 256)), ('R011',
+'Ishita Nair', '2007-02-04', 'Female', '9', 'A', '9656670106',
+'ishita.nair11@example.com', 'Udaipur, Rajasthan', '2024-04-18', 'Suresh Nair',
+'Rekha Nair', 'R011', SHA2('R011@2007', 256)), ('R012', 'Aadhya Pandey',
+'2009-08-08', 'Female', '7', 'B', '9178108013', 'aadhya.pandey12@example.com',
+'Jodhpur, Rajasthan', '2024-04-28', 'Vinod Pandey', 'Kavita Pandey', 'R012',
+SHA2('R012@2009', 256)), ('R013', 'Ananya Yadav', '2007-07-09', 'Female', '9',
+'A', '9746872343', 'ananya.yadav13@example.com', 'Jaipur, Rajasthan',
+'2024-04-24', 'Sanjay Yadav', 'Anita Yadav', 'R013', SHA2('R013@2007', 256)),
+('R014', 'Ananya Verma', '2006-09-28', 'Female', '10', 'B', '9820812191',
+'ananya.verma14@example.com', 'Jodhpur, Rajasthan', '2024-04-19', 'Rakesh
+Verma', 'Anita Verma', 'R014', SHA2('R014@2006', 256)), ('R015', 'Dhruv Gupta',
+'2007-05-07', 'Male', '9', 'B', '9534624751', 'dhruv.gupta15@example.com',
+'Jaipur, Rajasthan', '2024-04-03', 'Manoj Gupta', 'Anita Gupta', 'R015',
+SHA2('R015@2007', 256)), ('R016', 'Ansh Jain', '2009-02-08', 'Male', '7', 'B',
+'9542784980', 'ansh.jain16@example.com', 'Kota, Rajasthan', '2024-04-09',
+'Sanjay Jain', 'Sunita Jain', 'R016', SHA2('R016@2009', 256)), ('R017', 'Aditya
+Bhatt', '2009-05-20', 'Male', '7', 'B', '9353487401',
+'aditya.bhatt17@example.com', 'Ajmer, Rajasthan', '2024-05-25', 'Rakesh Bhatt',
+'Sunita Bhatt', 'R017', SHA2('R017@2009', 256)), ('R018', 'Ishaan Yadav',
+'2007-09-01', 'Male', '9', 'B', '9112805982', 'ishaan.yadav18@example.com',
+'Ajmer, Rajasthan', '2024-05-26', 'Rakesh Yadav', 'Meena Yadav', 'R018',
+SHA2('R018@2007', 256)), ('R019', 'Yash Mishra', '2009-06-25', 'Male', '7', 'A',
+'9869232260', 'yash.mishra19@example.com', 'Jodhpur, Rajasthan', '2024-06-28',
+'Ramesh Mishra', 'Kavita Mishra', 'R019', SHA2('R019@2009', 256)), ('R020',
+'Ishaan Yadav', '2010-01-28', 'Male', '6', 'B', '9733754330',
+'ishaan.yadav20@example.com', 'Jodhpur, Rajasthan', '2024-04-25', 'Anil Yadav',
+'Meena Yadav', 'R020', SHA2('R020@2010', 256)), ('R021', 'Sneha Menon',
+'2007-01-04', 'Female', '9', 'B', '9429401965', 'sneha.menon21@example.com',
+'Udaipur, Rajasthan', '2024-04-13', 'Manoj Menon', 'Anita Menon', 'R021',
+SHA2('R021@2007', 256)), ('R022', 'Ishaan Verma', '2007-09-26', 'Male', '9',
+'A', '9835615951', 'ishaan.verma22@example.com', 'Udaipur, Rajasthan',
+'2024-05-11', 'Anil Verma', 'Poonam Verma', 'R022', SHA2('R022@2007', 256)),
+('R023', 'Anika Bhatt', '2009-07-22', 'Female', '7', 'A', '9629946804',
+'anika.bhatt23@example.com', 'Udaipur, Rajasthan', '2024-06-20', 'Vinod Bhatt',
+'Geeta Bhatt', 'R023', SHA2('R023@2009', 256)), ('R024', 'Tanya Reddy',
+'2007-09-16', 'Female', '9', 'A', '9214895134', 'tanya.reddy24@example.com',
+'Jodhpur, Rajasthan', '2024-04-08', 'Suresh Reddy', 'Sunita Reddy', 'R024',
+SHA2('R024@2007', 256)), ('R025', 'Kritika Gupta', '2007-11-19', 'Female', '9',
+'B', '9367632016', 'kritika.gupta25@example.com', 'Jodhpur, Rajasthan',
+'2024-06-15', 'Ramesh Gupta', 'Poonam Gupta', 'R025', SHA2('R025@2007', 256));
+-- ========================================================= -- STEP 3 (optional
+check): verify all rows inserted correctly --
+========================================================= SELECT student_id,
+roll_no, name, username, password FROM students ORDER BY roll_no;
+>>>>>>> a306d396914253909423360543a1403c9eb5dbb6
