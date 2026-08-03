@@ -2,21 +2,27 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from routes import auth, student, faculty
-# from routes import chatbot   # temporarily disabled — API key milne tak
+from routes import auth, student, faculty, face
+
+# Chatbot temporarily disabled
+# from routes import chatbot
+
 app = FastAPI(title="Smart Attendance System")
 
-# Static files (CSS, JS, images) — accessible via /static/...
+# Static Files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# HTML templates folder
+# Templates
 templates = Jinja2Templates(directory="templates")
 
-# Backend routes
+# Routers
 app.include_router(auth.router)
 app.include_router(student.router)
 app.include_router(faculty.router)
-# app.include_router(chatbot.router)   # temporarily disabled — API key milne tak
+app.include_router(face.router)
+
+# Chatbot temporarily disabled
+# app.include_router(chatbot.router)
 
 
 @app.get("/")

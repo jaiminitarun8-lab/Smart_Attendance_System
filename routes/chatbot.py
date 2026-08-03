@@ -7,7 +7,6 @@ from ai.today import get_today_attendance
 from ai.subject import get_subject_attendance
 from ai.intent import detect_intent
 from ai.predictor import predict_attendance
-from ai.gemini import ask_gemini
 
 router = APIRouter()
 
