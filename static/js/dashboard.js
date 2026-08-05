@@ -44,142 +44,130 @@ const TIMETABLE = {
   ]
 };
 
-/* ---------- Tasks (dummy data — abhi in-memory, backend baad me connect hoga) ---------- */
-let TASKS = [
-  { id: 1, title: "Submit lab report", subject: "Physics", dueDate: "2026-08-05", completed: false },
-  { id: 2, title: "Solve worksheet — Chapter 4", subject: "Mathematics", dueDate: "2026-08-04", completed: false },
-  { id: 3, title: "Read Chapter 7", subject: "English", dueDate: "2026-08-02", completed: true },
-  { id: 4, title: "Group project outline", subject: "Computer Science", dueDate: "2026-08-08", completed: false }
-];
-let nextTaskId = TASKS.length + 1;
+/* ---------- Tasks (real backend se data aata hai) ---------- */
+async function fetchTasks() {
+  if (role === "student") {
+    const res = await fetch(`/api/tasks/student/${encodeURIComponent(userId)}`);
+    const data = await res.json();
+    return data.tasks || [];
+  } else {
+    const res = await fetch(`/api/tasks/faculty/${encodeURIComponent(userId)}`);
+    const data = await res.json();
+    return data.tasks || [];
+  }
+}
 
-function renderTasks() {
+async function completeTask(taskId) {
+  await fetch(`/api/tasks/${taskId}/complete`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ student_id: userId })
+  });
+}
+
+async function renderTasks() {
   const list = document.getElementById("taskList");
   const countLabel = document.getElementById("taskCountLabel");
   if (!list) return;
 
-  const pending = TASKS.filter(t => !t.completed).length;
-  if (countLabel) countLabel.textContent = `${pending} pending · ${TASKS.length} total`;
+  const tasks = await fetchTasks();
 
-  if (TASKS.length === 0) {
+  if (role === "student") {
+    const pending = tasks.filter(t => !t.completed).length;
+    if (countLabel) countLabel.textContent = `${pending} pending · ${tasks.length} total`;
+  } else {
+    const totalCompletions = tasks.reduce((s, t) => s + t.completed_count, 0);
+    if (countLabel) countLabel.textContent = `${tasks.length} tasks assigned`;
+  }
+
+  if (tasks.length === 0) {
     list.innerHTML = `<p style="color:var(--color-paper-dim);font-size:var(--fs-sm);padding:var(--space-3) 0;">Koi task assign nahi hua abhi.</p>`;
     return;
   }
 
-  list.innerHTML = TASKS.map(task => `
+  list.innerHTML = tasks.map(task => `
     <div class="quick-action" style="cursor:default;">
       <div>
         <div style="font-weight:600;${task.completed ? "text-decoration:line-through;color:var(--color-paper-dim);" : ""}">${task.title}</div>
-        <div style="font-family:var(--font-mono);font-size:.7rem;color:var(--color-paper-dim);margin-top:.25rem;">${task.subject} · Due ${task.dueDate}</div>
+        <div style="font-family:var(--font-mono);font-size:.7rem;color:var(--color-paper-dim);margin-top:.25rem;">${task.subject || ""} · Due ${task.due_date || "—"}</div>
       </div>
       ${role === "student"
         ? (task.completed
             ? `<span class="status-pill present">Completed</span>`
             : `<button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:var(--fs-xs);" data-complete-task="${task.id}">Mark complete</button>`)
-        : (task.completed ? `<span class="status-pill present">Done</span>` : `<span class="status-pill pending">Pending</span>`)
+        : `<span class="status-pill ${task.completed_count > 0 ? "present" : "pending"}">${task.completed_count} completed</span>`
       }
     </div>`).join("");
 
   if (role === "student") {
     list.querySelectorAll("[data-complete-task]").forEach(btn => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         const id = Number(btn.getAttribute("data-complete-task"));
-        const task = TASKS.find(t => t.id === id);
-        if (task) task.completed = true;
+        await completeTask(id);
         renderTasks();
       });
     });
   }
 }
 
-/* ---------- Other Activities ---------- */
-const ANNOUNCEMENTS = [
-  { text: "Mid-term exams start from 18th August", time: "Today" },
-  { text: "Parent-teacher meeting scheduled — 10th Aug", time: "2 days ago" },
-  { text: "College annual day registrations open", time: "4 days ago" }
-];
-const EXTRACURRICULAR = [
-  { text: "Basketball tryouts — Thursday, 4 PM", time: "This week" },
-  { text: "Coding club: weekly meetup", time: "Every Friday" },
-  { text: "Drama club auditions open", time: "This week" }
-];
-
-function renderActivitiesPage() {
+/* ---------- Other Activities (real backend se) ---------- */
+async function renderActivitiesPage() {
   const announcementsEl = document.getElementById("announcementsList");
   const extraEl = document.getElementById("extracurricularList");
+  if (!announcementsEl && !extraEl) return;
+
+  const res = await fetch("/api/activities");
+  const data = await res.json();
+  const announcements = data.announcements || [];
+  const extracurricular = data.extracurricular || [];
+
   if (announcementsEl) {
-    announcementsEl.innerHTML = ANNOUNCEMENTS.map(item => `
+    announcementsEl.innerHTML = announcements.map(item => `
       <div class="activity-row">
         <span class="activity-row__dot present"></span>
-        <span class="activity-row__main">${item.text}</span>
-        <span class="activity-row__meta">${item.time}</span>
-      </div>`).join("");
+        <span class="activity-row__main">${item.title}${item.description ? " — " + item.description : ""}</span>
+        <span class="activity-row__meta">${item.event_date || ""}</span>
+      </div>`).join("") || `<p style="color:var(--color-paper-dim);font-size:var(--fs-sm);">Koi announcement nahi hai abhi.</p>`;
   }
   if (extraEl) {
-    extraEl.innerHTML = EXTRACURRICULAR.map(item => `
+    extraEl.innerHTML = extracurricular.map(item => `
       <div class="activity-row">
         <span class="activity-row__dot present"></span>
-        <span class="activity-row__main">${item.text}</span>
-        <span class="activity-row__meta">${item.time}</span>
-      </div>`).join("");
+        <span class="activity-row__main">${item.title}${item.description ? " — " + item.description : ""}</span>
+        <span class="activity-row__meta">${item.event_date || ""}</span>
+      </div>`).join("") || `<p style="color:var(--color-paper-dim);font-size:var(--fs-sm);">Koi activity nahi hai abhi.</p>`;
   }
 }
 
-/* ---------- Marks Management ---------- */
-function gradeFor(pct) {
-  if (pct >= 90) return "A+";
-  if (pct >= 80) return "A";
-  if (pct >= 70) return "B";
-  if (pct >= 60) return "C";
-  if (pct >= 50) return "D";
-  return "F";
-}
-
-const STUDENT_MARKS = [
-  { subject: "Mathematics", obtained: 88, max: 100 },
-  { subject: "Physics", obtained: 76, max: 100 },
-  { subject: "Chemistry", obtained: 65, max: 100 },
-  { subject: "English", obtained: 91, max: 100 },
-  { subject: "Computer Science", obtained: 95, max: 100 }
-];
-
-const CLASS_MARKS = [
-  { name: "Aarav Sharma", obtained: 88, max: 100 },
-  { name: "Meera Nair", obtained: 92, max: 100 },
-  { name: "Kabir Singh", obtained: 54, max: 100 },
-  { name: "Ishita Rao", obtained: 70, max: 100 },
-  { name: "Devansh Patel", obtained: 81, max: 100 }
-];
-
-function renderMarksPage() {
+/* ---------- Marks Management (real backend se) ---------- */
+async function renderMarksPage() {
   const body = document.getElementById("marksTableBody");
   if (!body) return;
 
   if (role === "student") {
-    body.innerHTML = STUDENT_MARKS.map(m => {
-      const pct = Math.round((m.obtained / m.max) * 100);
-      return `<tr><td>${m.subject}</td><td>${m.obtained}</td><td>${m.max}</td><td>${pct}%</td><td><span class="status-pill ${pct >= 75 ? "present" : pct >= 50 ? "pending" : "absent"}">${gradeFor(pct)}</span></td></tr>`;
+    const res = await fetch(`/api/marks/student/${encodeURIComponent(userId)}`);
+    const data = await res.json();
+    const marks = data.marks || [];
+
+    body.innerHTML = marks.map(m => {
+      return `<tr><td>${m.subject}</td><td>${m.obtained}</td><td>${m.max_marks}</td><td>${m.percentage}%</td><td><span class="status-pill ${m.percentage >= 75 ? "present" : m.percentage >= 50 ? "pending" : "absent"}">${m.grade}</span></td></tr>`;
     }).join("");
 
-    const totalObtained = STUDENT_MARKS.reduce((s, m) => s + m.obtained, 0);
-    const totalMax = STUDENT_MARKS.reduce((s, m) => s + m.max, 0);
-    const overallPct = Math.round((totalObtained / totalMax) * 100);
-    const best = STUDENT_MARKS.reduce((a, b) => (a.obtained / a.max > b.obtained / b.max ? a : b));
-    const worst = STUDENT_MARKS.reduce((a, b) => (a.obtained / a.max < b.obtained / b.max ? a : b));
-
-    const overallPctEl = document.getElementById("marksOverallPct");
-    if (overallPctEl) {
-      document.getElementById("marksOverallPct").textContent = `${overallPct}%`;
-      document.getElementById("marksOverallGrade").textContent = gradeFor(overallPct);
-      document.getElementById("marksBestSubject").textContent = best.subject;
-      document.getElementById("marksBestScore").textContent = `${Math.round((best.obtained / best.max) * 100)}%`;
-      document.getElementById("marksWorstSubject").textContent = worst.subject;
-      document.getElementById("marksWorstScore").textContent = `${Math.round((worst.obtained / worst.max) * 100)}%`;
+    if (marks.length > 0) {
+      document.getElementById("marksOverallPct").textContent = `${data.overall_pct}%`;
+      document.getElementById("marksOverallGrade").textContent = data.overall_grade;
+      document.getElementById("marksBestSubject").textContent = data.best_subject;
+      document.getElementById("marksBestScore").textContent = `${data.best_pct}%`;
+      document.getElementById("marksWorstSubject").textContent = data.worst_subject;
+      document.getElementById("marksWorstScore").textContent = `${data.worst_pct}%`;
     }
   } else {
-    body.innerHTML = CLASS_MARKS.map(m => {
-      const pct = Math.round((m.obtained / m.max) * 100);
-      return `<tr><td>${m.name}</td><td>${m.obtained}</td><td>${m.max}</td><td>${pct}%</td><td><span class="status-pill ${pct >= 75 ? "present" : pct >= 50 ? "pending" : "absent"}">${gradeFor(pct)}</span></td></tr>`;
+    const res = await fetch(`/api/marks/section/B`);
+    const data = await res.json();
+    const marks = data.marks || [];
+
+    body.innerHTML = marks.map(m => {
+      return `<tr><td>${m.student_name}</td><td>${m.obtained}</td><td>${m.max_marks}</td><td>${m.percentage}%</td><td><span class="status-pill ${m.percentage >= 75 ? "present" : m.percentage >= 50 ? "pending" : "absent"}">${m.grade}</span></td></tr>`;
     }).join("");
   }
 }
@@ -284,14 +272,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const assignTaskForm = document.getElementById("assignTaskForm");
   if (assignTaskForm) {
-    assignTaskForm.addEventListener("submit", e => {
+    assignTaskForm.addEventListener("submit", async e => {
       e.preventDefault();
       const title = document.getElementById("taskTitle").value.trim();
       const subject = document.getElementById("taskSubject").value.trim();
       const dueDate = document.getElementById("taskDueDate").value;
       if (!title || !subject || !dueDate) return;
 
-      TASKS.unshift({ id: nextTaskId++, title, subject, dueDate, completed: false });
+      await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, subject, due_date: dueDate, section: "B", assigned_by: userId })
+      });
       renderTasks();
       assignTaskForm.reset();
     });

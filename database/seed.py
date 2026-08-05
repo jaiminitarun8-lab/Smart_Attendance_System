@@ -6,16 +6,11 @@ Chalane ka tarika:
     python -m database.seed
 """
 
-import hashlib
 from datetime import date, timedelta
 
 from database.connection import Base, engine, SessionLocal
-from database.models import Student, Faculty, Attendance, Leave
-
-
-def hash_password(password: str) -> str:
-    """Simple SHA-256 hashing. auth.py me bhi yehi function use hoga verify karne ke liye."""
-    return hashlib.sha256(password.encode()).hexdigest()
+from database.models import Student, Faculty, Attendance, Leave, Task, TaskCompletion, Mark, Activity
+from utils.security import hash_password
 
 
 def seed_data():
@@ -87,6 +82,50 @@ def seed_data():
         status="pending",
     )
     db.add(leave)
+    db.commit()
+
+    # ---------------- Sample Tasks (faculty ne assign kiye) ----------------
+    tasks = [
+        Task(title="Submit lab report", subject="Physics", due_date=today + timedelta(days=3),
+             section="B", assigned_by="F2026-0001"),
+        Task(title="Solve worksheet Ch. 4", subject="Mathematics", due_date=today + timedelta(days=1),
+             section="B", assigned_by="F2026-0001"),
+        Task(title="Read Chapter 7 & summarize", subject="English", due_date=today - timedelta(days=1),
+             section="B", assigned_by="F2026-0002"),
+    ]
+    db.add_all(tasks)
+    db.commit()
+
+    # Kuch students ne pehla task complete kar diya (testing ke liye)
+    db.add(TaskCompletion(task_id=tasks[0].id, student_id="S2026-0001"))
+    db.add(TaskCompletion(task_id=tasks[0].id, student_id="S2026-0002"))
+    db.commit()
+
+    # ---------------- Sample Marks (subject-wise, sabhi students ke liye) ----------------
+    subjects_marks = [
+        ("Mathematics", 88, 100), ("Physics", 76, 100), ("Chemistry", 82, 100),
+        ("English", 91, 100), ("Computer Science", 95, 100),
+    ]
+    marks_records = []
+    for student in students:
+        for subject, obtained, maxm in subjects_marks:
+            marks_records.append(
+                Mark(student_id=student.student_id, subject=subject, obtained=obtained, max_marks=maxm)
+            )
+    db.add_all(marks_records)
+
+    # ---------------- Sample Activities ----------------
+    activities = [
+        Activity(title="Annual Sports Day", description="Athletics ground, all sections invited",
+                  type="announcement", event_date=today + timedelta(days=10)),
+        Activity(title="Mid-term results declared", description="Check the Reports section",
+                  type="announcement", event_date=today - timedelta(days=2)),
+        Activity(title="Chess Club", description="Meets every Friday, 4 PM, Room 201",
+                  type="extracurricular", event_date=None),
+        Activity(title="Basketball practice", description="Mon/Wed/Fri, 6 AM, Sports complex",
+                  type="extracurricular", event_date=None),
+    ]
+    db.add_all(activities)
 
     db.commit()
     db.close()
@@ -96,6 +135,9 @@ def seed_data():
     print(f"   - {len(faculty)} faculty")
     print(f"   - {len(attendance_records)} attendance records")
     print("   - 1 leave request")
+    print(f"   - {len(tasks)} tasks")
+    print(f"   - {len(marks_records)} marks records")
+    print(f"   - {len(activities)} activities")
     print("\nLogin karne ke liye use karo:")
     print("   Student → ID: S2026-0001   Password: student123")
     print("   Faculty → ID: F2026-0001   Password: faculty123")
