@@ -11,31 +11,27 @@
 
 <link rel="stylesheet" href="/static/css/style.css" />
 </head>
-<body class="is-app-shell theme-faculty">
+<body class="is-app-shell theme-faculty-light">
 
 <div class="ledger-bg" aria-hidden="true"></div>
 
 <div class="app-shell">
 
   <aside class="sidebar">
-    <div class="sidebar__brand"><span class="brand__mark">A</span><span>AttendAI</span></div>
+    <div class="sidebar__brand"><span class="brand__mark">A</span></div>
 
     <nav class="sidebar__nav">
       <a href="#" class="sidebar__link is-active" data-nav-link data-page="dashboard">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>
         Dashboard
       </a>
-      <a href="#" class="sidebar__link" data-nav-link data-page="profile">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4 20c1.6-3.6 5-5.5 8-5.5s6.4 1.9 8 5.5"/></svg>
-        Profile
+      <a href="#" class="sidebar__link" data-nav-link data-page="timetable">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v4M16 4v4"/></svg>
+        My Classes
       </a>
       <a href="#" class="sidebar__link" data-nav-link data-page="reports">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5a1 1 0 0 1 1-1h9l6 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M14 4v5h5M8 13h8M8 16h5"/></svg>
         Reports
-      </a>
-      <a href="#" class="sidebar__link" data-nav-link data-page="timetable">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v4M16 4v4"/></svg>
-        Timetable
       </a>
       <a href="#" class="sidebar__link" data-nav-link data-page="tasks">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
@@ -43,25 +39,33 @@
       </a>
       <a href="#" class="sidebar__link" data-nav-link data-page="activities">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-        Other Activities
+        Announcements
       </a>
       <a href="#" class="sidebar__link" data-nav-link data-page="marks">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 15l4-6 4 3 5-7"/></svg>
         Marks
       </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4 20c1.6-3.6 5-5.5 8-5.5s6.4 1.9 8 5.5"/></svg>
+        Profile
+      </a>
 
       <p class="sidebar__label">Coming soon</p>
       <a href="#" class="sidebar__link" data-nav-link>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
         Leave Management <span class="tag">Soon</span>
       </a>
       <a href="#" class="sidebar__link" data-nav-link>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-        Notifications <span class="tag">Soon</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 21h8M13 3l7 4-7 4-7-4 7-4Z"/><path d="M6 9v6c0 1.5 2.7 3 6 3s6-1.5 6-3V9"/></svg>
+        Challenges <span class="tag">Soon</span>
       </a>
       <a href="#" class="sidebar__link" data-nav-link>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21c0-3.3-3.6-6-8-6s-8 2.7-8 6"/><circle cx="12" cy="7" r="4"/></svg>
-        AI Chatbot <span class="tag">Soon</span>
+        Students <span class="tag">Soon</span>
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+        Settings <span class="tag">Soon</span>
       </a>
     </nav>
 
@@ -76,15 +80,19 @@
   <main class="app-main">
     <div class="app-topbar">
       <div>
-        <h1 id="pageTitle">Welcome back, <span id="dashName">there</span></h1>
-        <p id="pageSubtitle">Faculty sign-in &middot; <span id="dashDate"></span></p>
+        <h1>Welcome, <span id="dashName">there</span> 👋</h1>
+        <p id="pageSubtitle">Here's what's happening with your classes today &middot; <span id="dashDate"></span></p>
       </div>
       <div class="app-topbar__right">
         <span class="date-chip" id="statusChip">STATUS · Present today</span>
+        <span class="bell-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="bell-chip__count">3</span>
+        </span>
         <div class="profile-chip role-teacher" id="profileChip">
           <span class="profile-chip__avatar" id="profileChipAvatar">T</span>
           <span class="profile-chip__text">
-            <span class="profile-chip__name" id="profileChipName">Teacher</span>
+            <span class="profile-chip__name"><span style="color:var(--fl-blue,#2f6bff);font-weight:800;margin-right:.35rem;">A</span><span id="profileChipName">Teacher</span></span>
             <span class="profile-chip__role">Teacher</span>
           </span>
         </div>
@@ -95,16 +103,47 @@
     <div data-page="dashboard" class="is-page-active">
 
       <div class="stat-grid">
-        <div class="stat-card"><div class="stat-card__label">Classes today</div><div class="stat-card__value">4</div><div class="stat-card__delta">Next: 11:00 AM · Section B</div></div>
-        <div class="stat-card"><div class="stat-card__label">Students present</div><div class="stat-card__value present">112</div><div class="stat-card__delta">out of 128 enrolled</div></div>
-        <div class="stat-card"><div class="stat-card__label">Absent today</div><div class="stat-card__value absent">16</div><div class="stat-card__delta">3 pending leave approval</div></div>
-        <div class="stat-card"><div class="stat-card__label">Avg. attendance</div><div class="stat-card__value">87%</div><div class="stat-card__delta">+2% vs last week</div></div>
+        <div class="stat-card stat-card--blue">
+          <span class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v4M16 4v4"/></svg></span>
+          <div class="stat-card__label">Classes today</div>
+          <div class="stat-card__value">4</div>
+          <a href="#" class="stat-card__link" data-nav-link data-page="timetable">View all classes →</a>
+        </div>
+        <div class="stat-card stat-card--green">
+          <span class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <div class="stat-card__label">Students present</div>
+          <div class="stat-card__value">112</div>
+          <span class="stat-card__link">out of 128 enrolled</span>
+        </div>
+        <div class="stat-card stat-card--orange">
+          <span class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg></span>
+          <div class="stat-card__label">Today's attendance</div>
+          <div class="stat-card__value">87%</div>
+          <a href="#" class="stat-card__link" data-nav-link data-page="reports">View report →</a>
+        </div>
+        <div class="stat-card stat-card--purple">
+          <span class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4 20c1.6-3.6 5-5.5 8-5.5s6.4 1.9 8 5.5"/></svg></span>
+          <div class="stat-card__label">Pending approvals</div>
+          <div class="stat-card__value">3</div>
+          <span class="stat-card__link">Leave requests</span>
+        </div>
       </div>
 
       <div class="panel-grid">
         <div class="panel">
-          <div class="panel__head"><h2>Weekly attendance</h2><span>Mon – Sun</span></div>
-          <div class="bar-chart" id="barChart"></div>
+          <div class="panel__head"><h2>Today's attendance overview</h2></div>
+          <div style="display:flex; align-items:center; gap:var(--space-5);">
+            <div class="donut" id="donutChart" style="--present:87;--absent:10;--late:3;">
+              <div class="donut__label"><span class="donut__pct" id="donutPct">87%</span><span class="donut__sub">Present</span></div>
+            </div>
+            <div class="donut-legend" style="flex:1;">
+              <div class="donut-legend__row"><span class="donut-legend__dot" style="background:var(--fl-green);"></span>Present <span id="donutPresentCount">112 (87%)</span></div>
+              <div class="donut-legend__row"><span class="donut-legend__dot" style="background:var(--fl-red);"></span>Absent <span id="donutAbsentCount">13 (10%)</span></div>
+              <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#cbd5e1;"></span>Late <span id="donutLateCount">3 (3%)</span></div>
+            </div>
+          </div>
+          <!-- kept for dashboard.js compatibility — hidden, still populated -->
+          <div class="bar-chart" id="barChart" style="display:none;"></div>
         </div>
         <div class="panel">
           <div class="panel__head"><h2>Recent activity</h2><span>Live</span></div>
@@ -112,18 +151,41 @@
         </div>
       </div>
 
-      <div class="table-panel">
-        <div class="panel__head"><h2>Section B · Today's roster</h2><span>28 students</span></div>
-        <table class="data-table">
-          <thead><tr><th>Student</th><th>Roll no.</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>Aarav Sharma</td><td>STU-8801</td><td><span class="status-pill present">Present</span></td></tr>
-            <tr><td>Meera Nair</td><td>STU-8802</td><td><span class="status-pill present">Present</span></td></tr>
-            <tr><td>Kabir Singh</td><td>STU-8803</td><td><span class="status-pill absent">Absent</span></td></tr>
-            <tr><td>Ishita Rao</td><td>STU-8804</td><td><span class="status-pill pending">Pending</span></td></tr>
-            <tr><td>Devansh Patel</td><td>STU-8805</td><td><span class="status-pill present">Present</span></td></tr>
-          </tbody>
-        </table>
+      <div class="panel-grid">
+        <div class="table-panel">
+          <div class="panel__head"><h2>Section B · Today's roster</h2><span>28 students</span></div>
+          <table class="data-table">
+            <thead><tr><th>Student</th><th>Roll no.</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Aarav Sharma</td><td>STU-8801</td><td><span class="status-pill present">Present</span></td></tr>
+              <tr><td>Meera Nair</td><td>STU-8802</td><td><span class="status-pill present">Present</span></td></tr>
+              <tr><td>Kabir Singh</td><td>STU-8803</td><td><span class="status-pill absent">Absent</span></td></tr>
+              <tr><td>Ishita Rao</td><td>STU-8804</td><td><span class="status-pill pending">Pending</span></td></tr>
+              <tr><td>Devansh Patel</td><td>STU-8805</td><td><span class="status-pill present">Present</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Quick actions</h2></div>
+          <div class="quick-actions" style="grid-template-columns:1fr 1fr;">
+            <a href="#" class="quick-action-tile quick-action-tile--blue" data-nav-link data-page="dashboard">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>
+              Mark Attendance
+            </a>
+            <a href="#" class="quick-action-tile quick-action-tile--purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 21h8M13 3l7 4-7 4-7-4 7-4Z"/></svg>
+              Create Challenge
+            </a>
+            <a href="#" class="quick-action-tile quick-action-tile--green" data-nav-link data-page="reports">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5a1 1 0 0 1 1-1h9l6 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/></svg>
+              Generate Report
+            </a>
+            <a href="#" class="quick-action-tile quick-action-tile--orange" data-nav-link data-page="activities">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l18-7-7 18-2-8-9-3Z"/></svg>
+              Send Announcement
+            </a>
+          </div>
+        </div>
       </div>
     </div>
     <!-- ================= /PAGE: Dashboard ================= -->
@@ -132,20 +194,20 @@
     <div data-page="profile">
       <div class="panel-grid" style="grid-template-columns:0.7fr 1.3fr;">
         <div class="panel" style="text-align:center;">
-          <div style="width:84px;height:84px;border-radius:50%;background:rgba(255,185,55,.14);color:var(--color-amber);display:flex;align-items:center;justify-content:center;margin:0 auto var(--space-3);font-family:var(--font-display);font-size:1.7rem;font-weight:600;" id="profileAvatar">T</div>
+          <div style="width:84px;height:84px;border-radius:50%;background:var(--fl-blue-soft);color:var(--fl-blue);display:flex;align-items:center;justify-content:center;margin:0 auto var(--space-3);font-family:var(--font-display);font-size:1.7rem;font-weight:600;" id="profileAvatar">T</div>
           <h2 style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:600;" id="profileName">Faculty Name</h2>
-          <p style="color:var(--color-paper-dim);font-size:var(--fs-sm);margin-top:.25rem;" id="profileIdLine">ID · —</p>
+          <p style="color:var(--fl-text-dim);font-size:var(--fs-sm);margin-top:.25rem;" id="profileIdLine">ID · —</p>
           <div class="date-chip" style="margin-top:var(--space-3);display:inline-flex;">ROLE · Faculty</div>
         </div>
         <div class="panel">
           <div class="panel__head"><h2>Details</h2><span>On file</span></div>
           <table class="data-table">
             <tbody>
-              <tr><td style="color:var(--color-paper-dim);">Department</td><td id="profileDept">Computer Science Department</td></tr>
-              <tr><td style="color:var(--color-paper-dim);">Email</td><td id="profileEmail">—</td></tr>
-              <tr><td style="color:var(--color-paper-dim);">Phone</td><td>+91 98xxx xxx21</td></tr>
-              <tr><td style="color:var(--color-paper-dim);">Joined</td><td>August 2023</td></tr>
-              <tr><td style="color:var(--color-paper-dim);">Status</td><td><span class="status-pill present">Active</span></td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Department</td><td id="profileDept">Computer Science Department</td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Email</td><td id="profileEmail">—</td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Phone</td><td>+91 98xxx xxx21</td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Joined</td><td>August 2023</td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Status</td><td><span class="status-pill present">Active</span></td></tr>
             </tbody>
           </table>
         </div>
@@ -156,10 +218,10 @@
     <!-- ================= PAGE: Reports ================= -->
     <div data-page="reports">
       <div class="stat-grid">
-        <div class="stat-card"><div class="stat-card__label">This term</div><div class="stat-card__value present">89%</div><div class="stat-card__delta">Attendance rate</div></div>
-        <div class="stat-card"><div class="stat-card__label">Present days</div><div class="stat-card__value">96</div><div class="stat-card__delta">out of 108</div></div>
-        <div class="stat-card"><div class="stat-card__label">Absent days</div><div class="stat-card__value absent">12</div><div class="stat-card__delta">4 excused</div></div>
-        <div class="stat-card"><div class="stat-card__label">Best week</div><div class="stat-card__value">100%</div><div class="stat-card__delta">Week of 14 Jul</div></div>
+        <div class="stat-card stat-card--green"><div class="stat-card__label">This term</div><div class="stat-card__value">89%</div><span class="stat-card__link">Attendance rate</span></div>
+        <div class="stat-card stat-card--blue"><div class="stat-card__label">Present days</div><div class="stat-card__value">96</div><span class="stat-card__link">out of 108</span></div>
+        <div class="stat-card stat-card--orange"><div class="stat-card__label">Absent days</div><div class="stat-card__value">12</div><span class="stat-card__link">4 excused</span></div>
+        <div class="stat-card stat-card--purple"><div class="stat-card__label">Best week</div><div class="stat-card__value">100%</div><span class="stat-card__link">Week of 14 Jul</span></div>
       </div>
       <div class="table-panel">
         <div class="panel__head">
@@ -198,16 +260,16 @@
         <div class="panel__head"><h2>Assign a new task</h2><span>Section B</span></div>
         <form id="assignTaskForm" style="display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:var(--space-3);align-items:end;">
           <div class="field-light" style="margin-bottom:0;">
-            <label for="taskTitle" style="color:var(--color-paper-dim);">Task title</label>
-            <input type="text" id="taskTitle" placeholder="e.g. Submit lab report" required style="background:rgba(246,244,238,.06);color:var(--color-paper);" />
+            <label for="taskTitle" style="color:var(--fl-text-dim);">Task title</label>
+            <input type="text" id="taskTitle" placeholder="e.g. Submit lab report" required />
           </div>
           <div class="field-light" style="margin-bottom:0;">
-            <label for="taskSubject" style="color:var(--color-paper-dim);">Subject</label>
-            <input type="text" id="taskSubject" placeholder="Mathematics" required style="background:rgba(246,244,238,.06);color:var(--color-paper);" />
+            <label for="taskSubject" style="color:var(--fl-text-dim);">Subject</label>
+            <input type="text" id="taskSubject" placeholder="Mathematics" required />
           </div>
           <div class="field-light" style="margin-bottom:0;">
-            <label for="taskDueDate" style="color:var(--color-paper-dim);">Due date</label>
-            <input type="date" id="taskDueDate" required style="background:rgba(246,244,238,.06);color:var(--color-paper);" />
+            <label for="taskDueDate" style="color:var(--fl-text-dim);">Due date</label>
+            <input type="date" id="taskDueDate" required />
           </div>
           <button type="submit" class="btn btn-primary" style="height:44px;">Assign</button>
         </form>

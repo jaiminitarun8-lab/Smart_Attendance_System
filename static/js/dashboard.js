@@ -182,6 +182,44 @@ function renderBarChart() {
     </div>`).join("");
 }
 
+/* ---------- Donut chart (faculty dashboard only) ----------
+   Uses the same WEEK_DATA the bar chart already uses — picks
+   "today"'s value as the present %, splits the remainder into
+   absent/late for the ring + legend. Purely additive: does not
+   touch anything the student dashboard relies on. */
+function renderDonut() {
+  const donut = document.getElementById("donutChart");
+  if (!donut || role !== "teacher") return;
+
+  const values = WEEK_DATA[role];
+  const dayIndex = (new Date().getDay() + 6) % 7; // Mon=0 ... Sun=6, matches WEEK_DATA order
+  const presentPct = values[dayIndex];
+  const remainder = 100 - presentPct;
+  const absentPct = Math.round(remainder * 0.7);
+  const latePct = remainder - absentPct;
+
+  const totalStudents = 128; // matches "out of 128 enrolled" on the stat card
+  const presentCount = Math.round((presentPct / 100) * totalStudents);
+  const absentCount = Math.round((absentPct / 100) * totalStudents);
+  const lateCount = totalStudents - presentCount - absentCount;
+
+  donut.style.setProperty("--present", presentPct);
+  donut.style.setProperty("--absent", absentPct);
+  donut.style.setProperty("--late", latePct);
+
+  const pctEl = document.getElementById("donutPct");
+  if (pctEl) pctEl.textContent = `${presentPct}%`;
+
+  const presentEl = document.getElementById("donutPresentCount");
+  if (presentEl) presentEl.textContent = `${presentCount} (${presentPct}%)`;
+
+  const absentEl = document.getElementById("donutAbsentCount");
+  if (absentEl) absentEl.textContent = `${absentCount} (${absentPct}%)`;
+
+  const lateEl = document.getElementById("donutLateCount");
+  if (lateEl) lateEl.textContent = `${lateCount} (${latePct}%)`;
+}
+
 function renderActivity() {
   document.getElementById("activityList").innerHTML = ACTIVITY[role].map(item => `
     <div class="activity-row">
@@ -226,8 +264,10 @@ function showPage(page) {
     marks: ["Marks", role === "student" ? "Your subject-wise performance" : "Manage marks for your class"]
   };
   const [title, subtitle] = titles[page] || titles.dashboard;
-  document.getElementById("pageTitle").textContent = title;
-  document.getElementById("pageSubtitle").textContent = subtitle;
+  const titleEl = document.getElementById("pageTitle");
+  const subtitleEl = document.getElementById("pageSubtitle");
+  if (titleEl) titleEl.textContent = title;
+  if (subtitleEl) subtitleEl.textContent = subtitle;
 }
 
 function downloadReportCsv() {
@@ -250,6 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
   populateTopbar();
   populateProfile();
   renderBarChart();
+  renderDonut();
   renderActivity();
   renderTimetable();
   renderTasks();

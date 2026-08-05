@@ -269,3 +269,157 @@ body.is-app-shell .footer{display:none}
   .hero__title{font-size:2.1rem}
   .role-card{padding:var(--space-4) var(--space-3)}
 }
+
+
+/* =====================================================================
+   FACULTY LIGHT THEME  ·  add this whole block to the END of style.css
+   Scoped under body.theme-faculty-light so student dashboard (theme-faculty
+   removed, dark) is completely untouched.
+   ===================================================================== */
+
+body.theme-faculty-light{
+  --fl-bg:#f4f6fb;
+  --fl-card:#ffffff;
+  --fl-border:#e6eaf2;
+  --fl-text:#0f172a;
+  --fl-text-dim:#6b7280;
+  --fl-sidebar:#0b1530;
+  --fl-sidebar-hover:rgba(255,255,255,.06);
+  --fl-blue:#2f6bff; --fl-blue-soft:#e9f0ff;
+  --fl-green:#16a34a; --fl-green-soft:#e7f9ee;
+  --fl-orange:#f59e0b; --fl-orange-soft:#fef3e2;
+  --fl-purple:#8b5cf6; --fl-purple-soft:#f3ecfe;
+  --fl-red:#e15554;
+  background:var(--fl-bg);
+  color:var(--fl-text);
+}
+body.theme-faculty-light .ledger-bg{ background:var(--fl-bg); }
+
+/* ---- shell ---- */
+body.theme-faculty-light .app-shell{ background:var(--fl-bg); }
+
+/* ---- sidebar ---- */
+body.theme-faculty-light .sidebar{
+  background:var(--fl-sidebar); border-right:none; gap:var(--space-4);
+}
+body.theme-faculty-light .sidebar::after{ display:none; }
+body.theme-faculty-light .sidebar__brand{ color:#fff; }
+body.theme-faculty-light .sidebar__brand .brand__mark{
+  background:var(--fl-blue); color:#fff; border-radius:10px; transform:none;
+}
+body.theme-faculty-light .sidebar__link{ color:rgba(255,255,255,.62); }
+body.theme-faculty-light .sidebar__link:hover{ background:var(--fl-sidebar-hover); color:#fff; }
+body.theme-faculty-light .sidebar__link.is-active{
+  background:var(--fl-blue); color:#fff;
+}
+body.theme-faculty-light .sidebar__label{ color:rgba(255,255,255,.35); }
+body.theme-faculty-light .sidebar__link .tag{
+  color:rgba(255,255,255,.45); border-color:rgba(255,255,255,.18);
+}
+body.theme-faculty-light .sidebar__foot{ border-top-color:rgba(255,255,255,.1); }
+body.theme-faculty-light .sidebar__foot .sidebar__link{ color:#f28b8a; }
+
+/* ---- topbar ---- */
+body.theme-faculty-light .app-topbar h1{ color:var(--fl-text); font-weight:700; }
+body.theme-faculty-light .app-topbar p{ color:var(--fl-text-dim); }
+body.theme-faculty-light .date-chip{
+  color:var(--fl-text); border-color:var(--fl-border); background:var(--fl-card);
+}
+body.theme-faculty-light .bell-chip{
+  position:relative; width:40px; height:40px; border-radius:50%;
+  border:1px solid var(--fl-border); background:var(--fl-card);
+  display:flex; align-items:center; justify-content:center; color:var(--fl-text-dim);
+}
+body.theme-faculty-light .bell-chip svg{ width:18px; height:18px; }
+body.theme-faculty-light .bell-chip__count{
+  position:absolute; top:-4px; right:-4px; background:var(--fl-red); color:#fff;
+  font-size:.65rem; font-weight:700; border-radius:50%; width:18px; height:18px;
+  display:flex; align-items:center; justify-content:center; border:2px solid var(--fl-bg);
+}
+body.theme-faculty-light .profile-chip{
+  border-color:var(--fl-border); background:var(--fl-card);
+}
+body.theme-faculty-light .profile-chip__name{ color:var(--fl-text); }
+
+/* ---- stat cards ---- */
+body.theme-faculty-light .stat-card{
+  background:var(--fl-card); border:1px solid var(--fl-border); border-radius:16px;
+  display:flex; flex-direction:column; gap:.6rem;
+}
+body.theme-faculty-light .stat-card__icon{
+  width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+}
+body.theme-faculty-light .stat-card__icon svg{ width:22px; height:22px; }
+body.theme-faculty-light .stat-card--blue .stat-card__icon{ background:var(--fl-blue-soft); color:var(--fl-blue); }
+body.theme-faculty-light .stat-card--green .stat-card__icon{ background:var(--fl-green-soft); color:var(--fl-green); }
+body.theme-faculty-light .stat-card--orange .stat-card__icon{ background:var(--fl-orange-soft); color:var(--fl-orange); }
+body.theme-faculty-light .stat-card--purple .stat-card__icon{ background:var(--fl-purple-soft); color:var(--fl-purple); }
+body.theme-faculty-light .stat-card__label{ color:var(--fl-text-dim); font-family:var(--font-body); text-transform:none; letter-spacing:0; font-size:var(--fs-sm); }
+body.theme-faculty-light .stat-card__value{ color:var(--fl-text); font-family:var(--font-body); font-weight:700; font-size:1.7rem; }
+body.theme-faculty-light .stat-card__link{ color:var(--fl-blue); font-size:var(--fs-xs); font-weight:600; }
+
+/* ---- panels ---- */
+body.theme-faculty-light .panel, body.theme-faculty-light .table-panel{
+  background:var(--fl-card); border:1px solid var(--fl-border); border-radius:16px;
+}
+body.theme-faculty-light .panel__head h2{ color:var(--fl-text); font-family:var(--font-body); font-weight:700; font-size:var(--fs-base); }
+body.theme-faculty-light .panel__head span, body.theme-faculty-light .panel__head a{ color:var(--fl-blue); font-family:var(--font-body); text-transform:none; letter-spacing:0; font-size:var(--fs-xs); font-weight:600; }
+
+/* ---- donut chart ---- */
+body.theme-faculty-light .donut{
+  --present:92; --absent:6; --late:2;
+  width:150px; height:150px; border-radius:50%; margin:0 auto;
+  display:flex; align-items:center; justify-content:center; position:relative;
+  background:conic-gradient(
+    var(--fl-green) 0 calc(var(--present)*1%),
+    var(--fl-red) calc(var(--present)*1%) calc((var(--present) + var(--absent))*1%),
+    #cbd5e1 calc((var(--present) + var(--absent))*1%) 100%
+  );
+}
+body.theme-faculty-light .donut::before{
+  content:""; position:absolute; inset:16px; background:var(--fl-card); border-radius:50%;
+}
+body.theme-faculty-light .donut__label{ position:relative; text-align:center; }
+body.theme-faculty-light .donut__pct{ font-size:1.6rem; font-weight:700; color:var(--fl-text); display:block; }
+body.theme-faculty-light .donut__sub{ font-size:var(--fs-xs); color:var(--fl-text-dim); }
+body.theme-faculty-light .donut-legend{ display:flex; flex-direction:column; gap:.6rem; font-size:var(--fs-sm); }
+body.theme-faculty-light .donut-legend__row{ display:flex; align-items:center; gap:.5rem; color:var(--fl-text); }
+body.theme-faculty-light .donut-legend__dot{ width:9px; height:9px; border-radius:50%; }
+body.theme-faculty-light .donut-legend__row span:last-child{ margin-left:auto; font-weight:600; }
+
+/* ---- recent classes / attendance rows ---- */
+body.theme-faculty-light .data-table th{ color:var(--fl-text-dim); text-transform:none; letter-spacing:0; font-family:var(--font-body); border-bottom-color:var(--fl-border); }
+body.theme-faculty-light .data-table td{ color:var(--fl-text); border-bottom-color:var(--fl-border); }
+body.theme-faculty-light .status-pill.present{ color:var(--fl-green); background:var(--fl-green-soft); border-color:transparent; }
+body.theme-faculty-light .status-pill.absent{ color:var(--fl-red); background:#fdeceb; border-color:transparent; }
+body.theme-faculty-light .status-pill.pending{ color:var(--fl-orange); background:var(--fl-orange-soft); border-color:transparent; }
+body.theme-faculty-light .progress-track{ width:100%; height:6px; background:#eef1f6; border-radius:20px; overflow:hidden; }
+body.theme-faculty-light .progress-fill{ height:100%; background:var(--fl-green); border-radius:20px; }
+body.theme-faculty-light .avatar-row{ display:flex; align-items:center; gap:.6rem; }
+body.theme-faculty-light .avatar-dot{
+  width:32px; height:32px; border-radius:50%; background:var(--fl-blue-soft); color:var(--fl-blue);
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.75rem; flex-shrink:0;
+}
+
+/* ---- quick actions ---- */
+body.theme-faculty-light .quick-actions{ display:grid; grid-template-columns:repeat(4,1fr); gap:var(--space-3); }
+body.theme-faculty-light .quick-action-tile{
+  border:1px solid var(--fl-border); border-radius:14px; padding:var(--space-3);
+  display:flex; flex-direction:column; align-items:flex-start; gap:.6rem; background:var(--fl-card);
+  font-size:var(--fs-sm); font-weight:600; color:var(--fl-text); transition:transform .15s ease, box-shadow .15s ease;
+}
+body.theme-faculty-light .quick-action-tile:hover{ transform:translateY(-2px); box-shadow:0 10px 24px -12px rgba(15,23,42,.18); }
+body.theme-faculty-light .quick-action-tile svg{ width:20px; height:20px; }
+body.theme-faculty-light .quick-action-tile--blue{ background:var(--fl-blue-soft); color:var(--fl-blue); }
+body.theme-faculty-light .quick-action-tile--purple{ background:var(--fl-purple-soft); color:var(--fl-purple); }
+body.theme-faculty-light .quick-action-tile--green{ background:var(--fl-green-soft); color:var(--fl-green); }
+body.theme-faculty-light .quick-action-tile--orange{ background:var(--fl-orange-soft); color:var(--fl-orange); }
+
+/* ---- challenge panel ---- */
+body.theme-faculty-light .challenge-box{
+  border:1px solid var(--fl-green-soft); background:var(--fl-green-soft); border-radius:14px; padding:var(--space-3);
+}
+body.theme-faculty-light .challenge-box__top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--space-2); }
+body.theme-faculty-light .challenge-tag{
+  background:#fff; color:var(--fl-green); font-size:var(--fs-xs); font-weight:700; padding:.15rem .6rem; border-radius:20px;
+}
