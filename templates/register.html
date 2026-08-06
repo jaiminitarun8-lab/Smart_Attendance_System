@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AttendAI · Sign in</title>
-<meta name="description" content="AI-powered attendance for schools and colleges." />
+<title>AttendAI · Register</title>
+<meta name="description" content="Create your AttendAI account." />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -31,7 +31,7 @@
 <main class="auth-wrap">
   <div class="auth-light" id="authLight">
 
-    <div class="auth-toggle" role="tablist" aria-label="Choose sign-in role">
+    <div class="auth-toggle" role="tablist" aria-label="Choose registration role">
       <button type="button" class="auth-toggle__btn is-active" id="toggleStudent" data-role-switch="student" role="tab" aria-selected="true">Student</button>
       <button type="button" class="auth-toggle__btn" id="toggleTeacher" data-role-switch="teacher" role="tab" aria-selected="false">Faculty</button>
     </div>
@@ -41,40 +41,55 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="M6 10.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-5.5"/></svg>
       </span>
       <div>
-        <p class="auth-banner__title"><span data-role-label>Student</span> sign-in</p>
-        <p class="auth-banner__sub">Use your <span data-id-label-lower>student ID</span> and password</p>
+        <p class="auth-banner__title">Create a <span data-role-label>student</span> account</p>
+        <p class="auth-banner__sub">Your <span data-id-label-lower>student ID</span> will be generated automatically</p>
       </div>
     </div>
 
-    <h1 class="auth-light__welcome">Welcome</h1>
-    <p class="auth-light__sub">Enter your details to reach your dashboard.</p>
+    <h1 class="auth-light__welcome">Register</h1>
+    <p class="auth-light__sub">Fill in your details to create your account.</p>
 
     <div class="form-message" id="formMessage" role="status" aria-live="polite"></div>
 
-    <form id="loginForm" novalidate>
+    <!-- Success state: shows the generated ID after successful registration -->
+    <div class="form-message form-message--success" id="successMessage" style="display:none;flex-direction:column;align-items:flex-start;gap:.4rem;">
+      <strong>Account created!</strong>
+      <span>Your ID: <strong id="generatedIdText">—</strong></span>
+      <a href="/" class="forgot-light" style="margin-top:.4rem;">Go to sign in →</a>
+    </div>
+
+    <form id="registerForm" novalidate>
       <div class="field-light">
-        <label for="loginId" data-id-label>Student ID</label>
-        <input type="text" id="loginId" name="loginId" placeholder="e.g. S2026-0417" autocomplete="username" list="idSuggestions" />
-        <datalist id="idSuggestions"></datalist>
-        <span class="field-error" id="loginIdError"></span>
+        <label for="regName">Full name</label>
+        <input type="text" id="regName" name="regName" placeholder="e.g. Aarav Sharma" autocomplete="name" />
+        <span class="field-error" id="regNameError"></span>
       </div>
 
       <div class="field-light">
-        <label for="loginPassword">Password</label>
+        <label for="regEmail">Email</label>
+        <input type="email" id="regEmail" name="regEmail" placeholder="you@example.com" autocomplete="email" />
+        <span class="field-error" id="regEmailError"></span>
+      </div>
+
+      <div class="field-light">
+        <label for="regGroup" data-group-label>Section</label>
+        <input type="text" id="regGroup" name="regGroup" placeholder="e.g. B" />
+        <span class="field-error" id="regGroupError"></span>
+      </div>
+
+      <div class="field-light">
+        <label for="regPassword">Password</label>
         <div class="field-input-light">
-          <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password" autocomplete="current-password" />
+          <input type="password" id="regPassword" name="regPassword" placeholder="Create a password" autocomplete="new-password" />
           <button type="button" class="field-toggle-light" id="togglePassword" aria-pressed="false">Show</button>
         </div>
-        <span class="field-error" id="loginPasswordError"></span>
+        <span class="field-error" id="regPasswordError"></span>
       </div>
 
-      <div class="auth-row-light">
-        <label class="remember-light"><input type="checkbox" id="rememberMe" name="rememberMe" /> Remember me</label>
-        <a href="/register" class="forgot-light" id="registerLink">Register here</a>
-      </div>
-
-      <button type="submit" class="btn-teal" id="loginSubmit">Sign in as <span data-role-label>student</span></button>
+      <button type="submit" class="btn-teal" id="registerSubmit">Create <span data-role-label>student</span> account</button>
     </form>
+
+    <p class="auth-light__footer">Already have an account? <a href="/">Sign in</a></p>
 
   </div>
 </main>
@@ -86,6 +101,6 @@
   </div>
 </footer>
 
-<script src="/static/js/login.js"></script>
+<script src="/static/js/register.js"></script>
 </body>
 </html>

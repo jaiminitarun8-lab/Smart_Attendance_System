@@ -172,6 +172,92 @@ async function renderMarksPage() {
   }
 }
 
+/* ---------- Leave Management (real backend se) ---------- */
+async function renderLeavePage() {
+  if (role === "student") {
+    const historyBody = document.getElementById("leaveHistoryBody");
+    if (!historyBody) return;
+
+    const res = await fetch(`/api/leave/student/${encodeURIComponent(userId)}`);
+    const data = await res.json();
+    const leaves = data.leaves || [];
+    const summary = data.summary || {};
+
+    const approvedEl = document.getElementById("leaveApprovedCount");
+    const pendingEl = document.getElementById("leavePendingCount");
+    const rejectedEl = document.getElementById("leaveRejectedCount");
+    if (approvedEl) approvedEl.textContent = summary.approved ?? 0;
+    if (pendingEl) pendingEl.textContent = summary.pending ?? 0;
+    if (rejectedEl) rejectedEl.textContent = summary.rejected ?? 0;
+
+    if (leaves.length === 0) {
+      historyBody.innerHTML = `<tr><td colspan="4" style="color:var(--color-paper-dim);">Koi leave request nahi hai abhi.</td></tr>`;
+      return;
+    }
+
+    historyBody.innerHTML = leaves.map(lv => `
+      <tr>
+        <td>${lv.reason || "—"}</td>
+        <td>${lv.start_date || "—"}</td>
+        <td>${lv.end_date || "—"}</td>
+        <td><span class="status-pill ${lv.status === "approved" ? "present" : lv.status === "rejected" ? "absent" : "pending"}">${capitalize(lv.status)}</span></td>
+      </tr>`).join("");
+  } else {
+    const body = document.getElementById("leaveRequestsBody");
+    if (!body) return;
+
+    const res = await fetch(`/api/leave/section/B`);
+    const data = await res.json();
+    const leaves = data.leaves || [];
+    const summary = data.summary || {};
+
+    const pendingEl = document.getElementById("facLeavePendingCount");
+    const approvedEl = document.getElementById("facLeaveApprovedCount");
+    const rejectedEl = document.getElementById("facLeaveRejectedCount");
+    const totalEl = document.getElementById("facLeaveTotalCount");
+    if (pendingEl) pendingEl.textContent = summary.pending ?? 0;
+    if (approvedEl) approvedEl.textContent = summary.approved ?? 0;
+    if (rejectedEl) rejectedEl.textContent = summary.rejected ?? 0;
+    if (totalEl) totalEl.textContent = summary.total ?? 0;
+
+    if (leaves.length === 0) {
+      body.innerHTML = `<tr><td colspan="7" style="color:var(--fl-text-dim);">Koi leave request nahi hai abhi.</td></tr>`;
+      return;
+    }
+
+    body.innerHTML = leaves.map(lv => `
+      <tr>
+        <td>${lv.student_name || lv.user_id}</td>
+        <td>${[lv.class_name, lv.section, lv.department].filter(Boolean).join(" / ") || "—"}</td>
+        <td>${lv.reason || "—"}</td>
+        <td>${lv.start_date || "—"}</td>
+        <td>${lv.end_date || "—"}</td>
+        <td><span class="status-pill ${lv.status === "approved" ? "present" : lv.status === "rejected" ? "absent" : "pending"}">${capitalize(lv.status)}</span></td>
+        <td>${lv.status === "pending"
+          ? `<button type="button" class="btn btn-primary" style="padding:.35rem .8rem;font-size:var(--fs-xs);" data-approve-leave="${lv.id}">Approve</button>
+             <button type="button" style="padding:.35rem .8rem;font-size:var(--fs-xs);margin-left:.4rem;border:1px solid #e15554;color:#e15554;border-radius:8px;background:transparent;font-weight:600;cursor:pointer;" data-reject-leave="${lv.id}">Reject</button>`
+          : "—"}</td>
+      </tr>`).join("");
+
+    body.querySelectorAll("[data-approve-leave]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        await fetch(`/api/leave/${btn.getAttribute("data-approve-leave")}/approve`, {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({})
+        });
+        renderLeavePage();
+      });
+    });
+    body.querySelectorAll("[data-reject-leave]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        await fetch(`/api/leave/${btn.getAttribute("data-reject-leave")}/reject`, {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({})
+        });
+        renderLeavePage();
+      });
+    });
+  }
+}
+
 function renderBarChart() {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const values = WEEK_DATA[role];
@@ -261,7 +347,12 @@ function showPage(page) {
     timetable: ["Weekly timetable", "Your scheduled classes, Monday to Friday"],
     tasks: ["Tasks", role === "student" ? "Tasks assigned by your faculty" : "Tasks you've assigned to your class"],
     activities: ["Other activities", "Announcements, events, and extra-curriculars"],
-    marks: ["Marks", role === "student" ? "Your subject-wise performance" : "Manage marks for your class"]
+    marks: ["Marks", role === "student" ? "Your subject-wise performance" : "Manage marks for your class"],
+    leave: ["Leave management", role === "student" ? "Apply for leave and track your requests" : "Review and approve student leave requests"],
+    notifications: ["Notifications", "Recent alerts and updates"],
+    challenges: ["Challenges", "Launch and monitor live attendance challenges"],
+    students: ["Students", "Section B student list and attendance"],
+    settings: ["Settings", "Account and notification preferences"]
   };
   const [title, subtitle] = titles[page] || titles.dashboard;
   const titleEl = document.getElementById("pageTitle");
@@ -296,6 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderTasks();
   renderActivitiesPage();
   renderMarksPage();
+  renderLeavePage();
   showPage("dashboard");
 
   document.querySelectorAll("[data-nav-link]").forEach(link => {
@@ -327,6 +419,25 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       renderTasks();
       assignTaskForm.reset();
+    });
+  }
+
+  const leaveApplyForm = document.getElementById("leaveApplyForm");
+  if (leaveApplyForm) {
+    leaveApplyForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      const startDate = document.getElementById("leaveFromDate").value;
+      const endDate = document.getElementById("leaveToDate").value;
+      const reason = document.getElementById("leaveReason").value.trim();
+      if (!startDate || !endDate || !reason) return;
+
+      await fetch("/api/leave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId, user_type: "student", start_date: startDate, end_date: endDate, reason })
+      });
+      renderLeavePage();
+      leaveApplyForm.reset();
     });
   }
 });

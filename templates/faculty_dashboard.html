@@ -49,23 +49,21 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4 20c1.6-3.6 5-5.5 8-5.5s6.4 1.9 8 5.5"/></svg>
         Profile
       </a>
-
-      <p class="sidebar__label">Coming soon</p>
-      <a href="#" class="sidebar__link" data-nav-link>
+      <a href="#" class="sidebar__link" data-nav-link data-page="leave">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-        Leave Management <span class="tag">Soon</span>
+        Leave Management
       </a>
-      <a href="#" class="sidebar__link" data-nav-link>
+      <a href="#" class="sidebar__link" data-nav-link data-page="challenges">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 21h8M13 3l7 4-7 4-7-4 7-4Z"/><path d="M6 9v6c0 1.5 2.7 3 6 3s6-1.5 6-3V9"/></svg>
-        Challenges <span class="tag">Soon</span>
+        Challenges
       </a>
-      <a href="#" class="sidebar__link" data-nav-link>
+      <a href="#" class="sidebar__link" data-nav-link data-page="students">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21c0-3.3-3.6-6-8-6s-8 2.7-8 6"/><circle cx="12" cy="7" r="4"/></svg>
-        Students <span class="tag">Soon</span>
+        Students
       </a>
-      <a href="#" class="sidebar__link" data-nav-link>
+      <a href="#" class="sidebar__link" data-nav-link data-page="settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
-        Settings <span class="tag">Soon</span>
+        Settings
       </a>
     </nav>
 
@@ -307,6 +305,99 @@
       </div>
     </div>
     <!-- ================= /PAGE: Marks ================= -->
+
+    <!-- ================= PAGE: Leave Management ================= -->
+    <div data-page="leave">
+      <div class="stat-grid">
+        <div class="stat-card stat-card--orange"><div class="stat-card__label">Pending</div><div class="stat-card__value" id="facLeavePendingCount">—</div><span class="stat-card__link">Needs your review</span></div>
+        <div class="stat-card stat-card--green"><div class="stat-card__label">Approved</div><div class="stat-card__value" id="facLeaveApprovedCount">—</div><span class="stat-card__link">This term</span></div>
+        <div class="stat-card stat-card--purple"><div class="stat-card__label">Rejected</div><div class="stat-card__value" id="facLeaveRejectedCount">—</div><span class="stat-card__link">This term</span></div>
+        <div class="stat-card stat-card--blue"><div class="stat-card__label">Total requests</div><div class="stat-card__value" id="facLeaveTotalCount">—</div><span class="stat-card__link">Section B</span></div>
+      </div>
+      <div class="table-panel">
+        <div class="panel__head"><h2>Leave requests</h2><span>Section B</span></div>
+        <table class="data-table">
+          <thead><tr><th>Student</th><th>Class / Section / Branch</th><th>Reason</th><th>From</th><th>To</th><th>Status</th><th></th></tr></thead>
+          <tbody id="leaveRequestsBody">
+            <tr><td colspan="7" style="color:var(--fl-text-dim);">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Leave Management ================= -->
+
+    <!-- ================= PAGE: Challenges ================= -->
+    <div data-page="challenges">
+      <div class="panel-grid" style="grid-template-columns:1fr;">
+        <div class="panel">
+          <div class="panel__head"><h2>Create a challenge</h2><span>Live pop quiz for attendance</span></div>
+          <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:var(--space-3);align-items:end;">
+            <div class="field-light" style="margin-bottom:0;">
+              <label style="color:var(--fl-text-dim);">Challenge title</label>
+              <input type="text" placeholder="e.g. Blink Twice" />
+            </div>
+            <div class="field-light" style="margin-bottom:0;">
+              <label style="color:var(--fl-text-dim);">Class</label>
+              <input type="text" placeholder="BCA 2nd Year - A" />
+            </div>
+            <div class="field-light" style="margin-bottom:0;">
+              <label style="color:var(--fl-text-dim);">Duration (sec)</label>
+              <input type="number" placeholder="60" />
+            </div>
+            <button type="button" class="btn btn-primary" style="height:44px;">Launch</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel__head"><h2>Live challenge status</h2><span class="status-pill present" style="margin:0;">Active</span></div>
+        <div class="challenge-box">
+          <div class="challenge-box__top">
+            <div><strong>Challenge:</strong> Blink Twice &nbsp;·&nbsp; <span style="color:var(--fl-text-dim);">Section B</span></div>
+            <span class="challenge-tag">00:45 left</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" style="width:93%;"></div></div>
+          <div style="margin-top:.4rem;font-size:var(--fs-xs);color:var(--fl-text-dim);">28 / 30 responses</div>
+        </div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Challenges ================= -->
+
+    <!-- ================= PAGE: Students ================= -->
+    <div data-page="students">
+      <div class="table-panel">
+        <div class="panel__head"><h2>Section B · Students</h2><span>28 students</span></div>
+        <table class="data-table">
+          <thead><tr><th>Student</th><th>Roll no.</th><th>Attendance</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Aarav Sharma</td><td>STU-8801</td><td>92%</td><td><span class="status-pill present">Active</span></td></tr>
+            <tr><td>Meera Nair</td><td>STU-8802</td><td>88%</td><td><span class="status-pill present">Active</span></td></tr>
+            <tr><td>Kabir Singh</td><td>STU-8803</td><td>74%</td><td><span class="status-pill pending">At risk</span></td></tr>
+            <tr><td>Ishita Rao</td><td>STU-8804</td><td>95%</td><td><span class="status-pill present">Active</span></td></tr>
+            <tr><td>Devansh Patel</td><td>STU-8805</td><td>81%</td><td><span class="status-pill present">Active</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Students ================= -->
+
+    <!-- ================= PAGE: Settings ================= -->
+    <div data-page="settings">
+      <div class="panel-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="panel">
+          <div class="panel__head"><h2>Account settings</h2></div>
+          <div class="field-light"><label style="color:var(--fl-text-dim);">Display name</label><input type="text" value="Dr. Ramesh Verma" /></div>
+          <div class="field-light"><label style="color:var(--fl-text-dim);">Email</label><input type="email" value="ramesh.verma@attendai.edu" /></div>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Notifications</h2></div>
+          <div class="quick-action"><span>Email me on new leave requests</span><input type="checkbox" checked /></div>
+          <div class="quick-action"><span>Email me daily attendance summary</span><input type="checkbox" checked /></div>
+          <div class="quick-action"><span>Notify on low attendance (below 75%)</span><input type="checkbox" /></div>
+        </div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Settings ================= -->
 
   </main>
 </div>

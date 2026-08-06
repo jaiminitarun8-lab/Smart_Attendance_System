@@ -23,7 +23,6 @@
 
     <div class="sidebar__brand">
       <span class="brand__mark">A</span>
-      <span>AttendAI</span>
     </div>
 
     <nav class="sidebar__nav">
@@ -84,21 +83,19 @@
         Marks
       </a>
 
-      <p class="sidebar__label">Coming soon</p>
-
-      <a href="#" class="sidebar__link" data-nav-link>
+      <a href="#" class="sidebar__link" data-nav-link data-page="leave">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
         Leave Management
-        <span class="tag">Soon</span>
       </a>
 
-      <a href="#" class="sidebar__link" data-nav-link>
+      <a href="#" class="sidebar__link" data-nav-link data-page="notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/><circle cx="18" cy="6" r="3" fill="var(--color-absent)" stroke="none"/></svg>
         Notifications
-        <span class="tag">Soon</span>
       </a>
 
-      <a href="#" class="sidebar__link" data-nav-link>
+      <a href="#" class="sidebar__link" id="openChatbotLink">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21c0-3.3-3.6-6-8-6s-8 2.7-8 6"/><circle cx="12" cy="7" r="4"/></svg>
         AI Chatbot
-        <span class="tag">Soon</span>
       </a>
 
     </nav>
@@ -799,6 +796,62 @@
 
     </div>
 
+    <!-- Leave Management -->
+
+    <div data-page="leave">
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-card__label">Leaves left</div><div class="stat-card__value present">4</div><div class="stat-card__delta">out of 12 this term</div></div>
+        <div class="stat-card"><div class="stat-card__label">Approved</div><div class="stat-card__value" id="leaveApprovedCount">—</div><div class="stat-card__delta">This term</div></div>
+        <div class="stat-card"><div class="stat-card__label">Pending</div><div class="stat-card__value" id="leavePendingCount">—</div><div class="stat-card__delta">Awaiting review</div></div>
+        <div class="stat-card"><div class="stat-card__label">Rejected</div><div class="stat-card__value absent" id="leaveRejectedCount">—</div><div class="stat-card__delta">This term</div></div>
+      </div>
+
+      <div class="table-panel" style="margin-bottom:var(--space-3);">
+        <div class="panel__head"><h2>Apply for leave</h2></div>
+        <form id="leaveApplyForm" style="display:grid;grid-template-columns:1fr 1fr 1.5fr auto;gap:var(--space-3);align-items:end;">
+          <div class="field-light" style="margin-bottom:0;">
+            <label style="color:var(--color-paper-dim);">From</label>
+            <input type="date" id="leaveFromDate" required style="background:rgba(246,244,238,.06);color:var(--color-paper);" />
+          </div>
+          <div class="field-light" style="margin-bottom:0;">
+            <label style="color:var(--color-paper-dim);">To</label>
+            <input type="date" id="leaveToDate" required style="background:rgba(246,244,238,.06);color:var(--color-paper);" />
+          </div>
+          <div class="field-light" style="margin-bottom:0;">
+            <label style="color:var(--color-paper-dim);">Reason</label>
+            <input type="text" id="leaveReason" placeholder="e.g. Fever" required style="background:rgba(246,244,238,.06);color:var(--color-paper);" />
+          </div>
+          <button type="submit" class="btn btn-primary" style="height:44px;">Submit request</button>
+        </form>
+      </div>
+
+      <div class="table-panel">
+        <div class="panel__head"><h2>My leave history</h2></div>
+        <table class="data-table">
+          <thead><tr><th>Reason</th><th>From</th><th>To</th><th>Status</th></tr></thead>
+          <tbody id="leaveHistoryBody">
+            <tr><td colspan="4" style="color:var(--color-paper-dim);">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+
+    <div data-page="notifications">
+      <div class="table-panel">
+        <div class="panel__head"><h2>Notifications</h2><span>4 unread</span></div>
+        <div class="activity-list">
+          <div class="activity-row"><span class="activity-row__dot absent"></span><span class="activity-row__main">You were marked absent for Chemistry</span><span class="activity-row__meta">Yesterday</span></div>
+          <div class="activity-row"><span class="activity-row__dot present"></span><span class="activity-row__main">New task assigned: Submit lab report</span><span class="activity-row__meta">2 hrs ago</span></div>
+          <div class="activity-row"><span class="activity-row__dot present"></span><span class="activity-row__main">Your leave request (18 Jul) was rejected</span><span class="activity-row__meta">1 day ago</span></div>
+          <div class="activity-row"><span class="activity-row__dot present"></span><span class="activity-row__main">Marks updated for Mathematics</span><span class="activity-row__meta">2 days ago</span></div>
+          <div class="activity-row"><span class="activity-row__dot present"></span><span class="activity-row__main">New announcement: Annual Sports Day</span><span class="activity-row__meta">3 days ago</span></div>
+        </div>
+      </div>
+    </div>
+
   </main>
 
 </div>
@@ -867,6 +920,19 @@
 
 <script>
 window.ATTENDAI_ROLE = "student";
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const chatLink = document.getElementById("openChatbotLink");
+  const chatToggle = document.getElementById("chatToggle");
+  if (chatLink && chatToggle) {
+    chatLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      chatToggle.click();
+    });
+  }
+});
 </script>
 
 <script src="/static/js/dashboard.js"></script>
