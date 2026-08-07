@@ -21,8 +21,8 @@ function setRole(role) {
   roleLabels.forEach(el => { el.textContent = role === "student" ? "student" : "faculty"; });
   idLabelsLower.forEach(el => { el.textContent = role === "student" ? "student ID" : "faculty ID"; });
 
-  if (groupLabel) groupLabel.textContent = role === "student" ? "Section" : "Department";
-  if (regGroupInput) regGroupInput.placeholder = role === "student" ? "e.g. B" : "e.g. Computer Science";
+  if (groupLabel) groupLabel.textContent = role === "student" ? "College ID" : "Department";
+  if (regGroupInput) regGroupInput.placeholder = role === "student" ? "e.g. CLG-2026-045" : "e.g. Computer Science";
 
   registerSubmit.innerHTML = `Create <span data-role-label>${role === "student" ? "student" : "faculty"}</span> account`;
 }
@@ -71,12 +71,12 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
   let hasError = false;
   if (!name) { showFieldError("regNameError", "Naam likhna zaroori hai."); hasError = true; }
   if (!email) { showFieldError("regEmailError", "Email likhna zaroori hai."); hasError = true; }
-  if (!group) { showFieldError("regGroupError", currentRole === "student" ? "Section likhna zaroori hai." : "Department likhna zaroori hai."); hasError = true; }
+  if (!group) { showFieldError("regGroupError", currentRole === "student" ? "College ID likhna zaroori hai." : "Department likhna zaroori hai."); hasError = true; }
   if (!password || password.length < 6) { showFieldError("regPasswordError", "Password kam se kam 6 characters ka hona chahiye."); hasError = true; }
   if (hasError) return;
 
   const payload = currentRole === "student"
-    ? { name, email, password, section: group }
+    ? { name, email, password, college_id: group }
     : { name, email, password, department: group };
 
   const endpoint = currentRole === "student" ? "/api/register/student" : "/api/register/faculty";

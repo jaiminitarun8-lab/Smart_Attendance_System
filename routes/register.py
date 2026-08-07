@@ -15,7 +15,7 @@ class StudentRegister(BaseModel):
     name: str
     email: str
     password: str
-    section: str
+    college_id: str
 
 
 class FacultyRegister(BaseModel):
@@ -48,9 +48,9 @@ def _generate_id(db: Session, model, id_field: str, prefix: str) -> str:
 def register_student(data: StudentRegister, db: Session = Depends(get_db)):
     name = data.name.strip()
     email = data.email.strip().lower()
-    section = data.section.strip()
+    college_id = data.college_id.strip()
 
-    if not name or not email or not section or len(data.password) < 6:
+    if not name or not email or not college_id or len(data.password) < 6:
         return {"success": False, "message": "Saari fields sahi se bharo (password kam se kam 6 characters)."}
 
     existing = db.query(Student).filter(Student.email == email).first()
@@ -64,7 +64,7 @@ def register_student(data: StudentRegister, db: Session = Depends(get_db)):
         name=name,
         email=email,
         password_hash=hash_password(data.password),
-        section=section,
+        department=college_id,   # college ID yahan store ho raha hai
     )
     db.add(student)
     try:

@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from datetime import date as date_type
 
 from database.connection import get_db
-from database.models import Leave, Student
+from database.models import Leave, Student, Notification
 
 router = APIRouter(prefix="/api/leave", tags=["leave"])
 
@@ -144,6 +144,11 @@ def approve_leave(leave_id: int, data: LeaveDecision, db: Session = Depends(get_
     if not leave:
         return {"success": False, "message": "Leave request not found."}
     leave.status = "approved"
+    db.add(Notification(
+        user_id=leave.user_id,
+        user_type=leave.user_type,
+        title=f"Your leave request ({leave.start_date}) was approved",
+    ))
     db.commit()
     return {"success": True, "message": "Leave approved.", "leave": _serialize(leave)}
 
@@ -154,5 +159,10 @@ def reject_leave(leave_id: int, data: LeaveDecision, db: Session = Depends(get_d
     if not leave:
         return {"success": False, "message": "Leave request not found."}
     leave.status = "rejected"
+    db.add(Notification(
+        user_id=leave.user_id,
+        user_type=leave.user_type,
+        title=f"Your leave request ({leave.start_date}) was rejected",
+    ))
     db.commit()
     return {"success": True, "message": "Leave rejected.", "leave": _serialize(leave)}

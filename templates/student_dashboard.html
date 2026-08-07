@@ -841,13 +841,9 @@
 
     <div data-page="notifications">
       <div class="table-panel">
-        <div class="panel__head"><h2>Notifications</h2><span>4 unread</span></div>
-        <div class="activity-list">
-          <div class="activity-row"><span class="activity-row__dot absent"></span><span class="activity-row__main">You were marked absent for Chemistry</span><span class="activity-row__meta">Yesterday</span></div>
-          <div class="activity-row"><span class="activity-row__dot present"></span><span class="activity-row__main">New task assigned: Submit lab report</span><span class="activity-row__meta">2 hrs ago</span></div>
-          <div class="activity-row"><span class="activity-row__dot present"></span><span class="activity-row__main">Your leave request (18 Jul) was rejected</span><span class="activity-row__meta">1 day ago</span></div>
-          <div class="activity-row"><span class="activity-row__dot present"></span><span class="activity-row__main">Marks updated for Mathematics</span><span class="activity-row__meta">2 days ago</span></div>
-          <div class="activity-row"><span class="activity-row__dot present"></span><span class="activity-row__main">New announcement: Annual Sports Day</span><span class="activity-row__meta">3 days ago</span></div>
+        <div class="panel__head"><h2>Notifications</h2><span id="notificationCountLabel">—</span></div>
+        <div class="activity-list" id="notificationsList">
+          <p style="color:var(--color-paper-dim);font-size:var(--fs-sm);">Loading…</p>
         </div>
       </div>
     </div>

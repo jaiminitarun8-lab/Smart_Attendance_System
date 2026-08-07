@@ -258,6 +258,38 @@ async function renderLeavePage() {
   }
 }
 
+/* ---------- Notifications (real backend se) ---------- */
+async function renderNotificationsPage() {
+  const list = document.getElementById("notificationsList");
+  if (!list) return;
+
+  const res = await fetch(`/api/notifications/${encodeURIComponent(userId)}`);
+  const data = await res.json();
+  const items = data.notifications || [];
+
+  const countLabel = document.getElementById("notificationCountLabel");
+  if (countLabel) countLabel.textContent = `${data.unread_count || 0} unread`;
+
+  if (items.length === 0) {
+    list.innerHTML = `<p style="color:var(--color-paper-dim);font-size:var(--fs-sm);padding:var(--space-3) 0;">Koi notification nahi hai abhi.</p>`;
+    return;
+  }
+
+  list.innerHTML = items.map(n => `
+    <div class="activity-row" data-notif-id="${n.id}" style="${n.is_read ? "opacity:.55;" : ""}cursor:pointer;">
+      <span class="activity-row__dot ${n.is_read ? "" : "absent"}"></span>
+      <span class="activity-row__main">${n.title}</span>
+      <span class="activity-row__meta">${n.created_at ? new Date(n.created_at).toLocaleDateString() : ""}</span>
+    </div>`).join("");
+
+  list.querySelectorAll("[data-notif-id]").forEach(row => {
+    row.addEventListener("click", async () => {
+      await fetch(`/api/notifications/${row.getAttribute("data-notif-id")}/read`, { method: "POST" });
+      renderNotificationsPage();
+    });
+  });
+}
+
 function renderBarChart() {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const values = WEEK_DATA[role];
@@ -388,6 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderActivitiesPage();
   renderMarksPage();
   renderLeavePage();
+  renderNotificationsPage();
   showPage("dashboard");
 
   document.querySelectorAll("[data-nav-link]").forEach(link => {

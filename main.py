@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from routes import auth, student, faculty, face, tasks, marks, activities, leave, register
+from routes import auth, student, faculty, face, tasks, marks, activities, leave, register, notifications
 
 # Chatbot temporarily disabled
 # from routes import chatbot
@@ -25,6 +25,7 @@ app.include_router(marks.router)
 app.include_router(activities.router)
 app.include_router(leave.router)
 app.include_router(register.router)
+app.include_router(notifications.router)
 
 # Chatbot temporarily disabled
 # app.include_router(chatbot.router)
