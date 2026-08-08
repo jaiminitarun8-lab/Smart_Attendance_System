@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from datetime import date as date_type
 
 from database.connection import get_db
-from database.models import Task, TaskCompletion, Student
+from database.models import Task, TaskCompletion, Student, Notification
 
 router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 
@@ -77,6 +77,17 @@ def create_task(data: TaskCreate, db: Session = Depends(get_db)):
     db.add(task)
     db.commit()
     db.refresh(task)
+
+    # Section ke sabhi students ko notify karo
+    students = db.query(Student).filter(Student.section == data.section).all()
+    for s in students:
+        db.add(Notification(
+            user_id=s.student_id,
+            user_type="student",
+            title=f"New task assigned: {data.title} ({data.subject}) — due {data.due_date}",
+        ))
+    db.commit()
+
     return {"success": True, "id": task.id}
 
 

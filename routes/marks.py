@@ -1,10 +1,18 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 
 from database.connection import get_db
-from database.models import Mark, Student
+from database.models import Mark, Student, Notification
 
 router = APIRouter(prefix="/api/marks", tags=["marks"])
+
+
+class MarkCreate(BaseModel):
+    student_id: str
+    subject: str
+    obtained: int
+    max_marks: int
 
 
 def grade_for(percentage: float) -> str:
@@ -59,3 +67,29 @@ def get_section_marks(section: str, db: Session = Depends(get_db)):
             "percentage": pct, "grade": grade_for(pct),
         })
     return {"success": True, "marks": result}
+
+
+@router.post("")
+def add_or_update_mark(data: MarkCreate, db: Session = Depends(get_db)):
+    existing = db.query(Mark).filter(
+        Mark.student_id == data.student_id, Mark.subject == data.subject
+    ).first()
+
+    if existing:
+        existing.obtained = data.obtained
+        existing.max_marks = data.max_marks
+    else:
+        db.add(Mark(
+            student_id=data.student_id, subject=data.subject,
+            obtained=data.obtained, max_marks=data.max_marks,
+        ))
+
+    pct = round((data.obtained / data.max_marks) * 100, 1)
+    db.add(Notification(
+        user_id=data.student_id,
+        user_type="student",
+        title=f"New marks added for {data.subject}: {data.obtained}/{data.max_marks} ({pct}%)",
+    ))
+
+    db.commit()
+    return {"success": True, "message": "Marks saved."}

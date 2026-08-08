@@ -15,6 +15,7 @@ class Student(Base):
     phone = Column(String, nullable=True)
     department = Column(String, nullable=True)
     section = Column(String, nullable=True)
+    college_id = Column(String, nullable=True)          # student registration ke waqt collect hota hai
     class_name = Column(String, nullable=True)         # e.g. "7", "10"
     dob = Column(String, nullable=True)
     gender = Column(String, nullable=True)
