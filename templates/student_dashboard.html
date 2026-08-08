@@ -174,8 +174,8 @@
 
         <div class="stat-card">
           <div class="stat-card__label">This month</div>
-          <div class="stat-card__value present">92%</div>
-          <div class="stat-card__delta">22 of 24 days present</div>
+          <div class="stat-card__value present" id="monthAttendancePct">—</div>
+          <div class="stat-card__delta" id="monthAttendanceDelta">Loading…</div>
         </div>
 
         <div class="stat-card">
@@ -251,57 +251,9 @@
           </thead>
 
 
-          <tbody>
+          <tbody id="attendanceLogBody">
 
-            <tr>
-              <td>Mathematics</td>
-              <td>29 Jul</td>
-              <td>
-                <span class="status-pill present">
-                  Present
-                </span>
-              </td>
-            </tr>
-
-            <tr>
-              <td>Physics</td>
-              <td>29 Jul</td>
-              <td>
-                <span class="status-pill present">
-                  Present
-                </span>
-              </td>
-            </tr>
-
-            <tr>
-              <td>Chemistry</td>
-              <td>28 Jul</td>
-              <td>
-                <span class="status-pill absent">
-                  Absent
-                </span>
-              </td>
-            </tr>
-
-            <tr>
-              <td>English</td>
-              <td>28 Jul</td>
-              <td>
-                <span class="status-pill present">
-                  Present
-                </span>
-              </td>
-            </tr>
-
-            <tr>
-              <td>Computer Science</td>
-              <td>27 Jul</td>
-              <td>
-                <span class="status-pill present">
-                  Present
-                </span>
-              </td>
-            </tr>
+            <tr><td colspan="3" style="color:var(--color-paper-dim);">Loading…</td></tr>
 
           </tbody>
 

@@ -110,20 +110,20 @@
         <div class="stat-card stat-card--green">
           <span class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg></span>
           <div class="stat-card__label">Students present</div>
-          <div class="stat-card__value">112</div>
-          <span class="stat-card__link">out of 128 enrolled</span>
+          <div class="stat-card__value" id="facStudentsPresentValue">—</div>
+          <span class="stat-card__link" id="facStudentsPresentDelta">out of — enrolled</span>
         </div>
         <div class="stat-card stat-card--orange">
           <span class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg></span>
           <div class="stat-card__label">Today's attendance</div>
-          <div class="stat-card__value">87%</div>
+          <div class="stat-card__value" id="facTodayAttendanceValue">—</div>
           <a href="#" class="stat-card__link" data-nav-link data-page="reports">View report →</a>
         </div>
         <div class="stat-card stat-card--purple">
           <span class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4 20c1.6-3.6 5-5.5 8-5.5s6.4 1.9 8 5.5"/></svg></span>
           <div class="stat-card__label">Pending approvals</div>
-          <div class="stat-card__value">3</div>
-          <span class="stat-card__link">Leave requests</span>
+          <div class="stat-card__value" id="facPendingApprovalsValue">—</div>
+          <a href="#" class="stat-card__link" data-nav-link data-page="leave">Leave requests</a>
         </div>
       </div>
 
@@ -151,15 +151,18 @@
 
       <div class="panel-grid">
         <div class="table-panel">
-          <div class="panel__head"><h2>Section B · Today's roster</h2><span>28 students</span></div>
+          <div class="panel__head">
+            <h2>Section B · Today's roster</h2>
+            <span id="rosterCountLabel">— students</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:var(--space-3);">
+            <label style="font-size:var(--fs-xs);color:var(--fl-text-dim);">Subject:</label>
+            <input type="text" id="rosterSubject" value="General" style="padding:.4rem .7rem;border:1px solid var(--fl-border);border-radius:8px;font-size:var(--fs-sm);max-width:160px;" />
+          </div>
           <table class="data-table">
-            <thead><tr><th>Student</th><th>Roll no.</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr><td>Aarav Sharma</td><td>STU-8801</td><td><span class="status-pill present">Present</span></td></tr>
-              <tr><td>Meera Nair</td><td>STU-8802</td><td><span class="status-pill present">Present</span></td></tr>
-              <tr><td>Kabir Singh</td><td>STU-8803</td><td><span class="status-pill absent">Absent</span></td></tr>
-              <tr><td>Ishita Rao</td><td>STU-8804</td><td><span class="status-pill pending">Pending</span></td></tr>
-              <tr><td>Devansh Patel</td><td>STU-8805</td><td><span class="status-pill present">Present</span></td></tr>
+            <thead><tr><th>Student</th><th>Roll no.</th><th>Status</th><th></th></tr></thead>
+            <tbody id="rosterTableBody">
+              <tr><td colspan="4" style="color:var(--fl-text-dim);">Loading…</td></tr>
             </tbody>
           </table>
         </div>

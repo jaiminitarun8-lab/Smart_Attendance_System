@@ -290,36 +290,70 @@ async function renderNotificationsPage() {
   });
 }
 
-function renderBarChart() {
+/* ---------- Attendance (real backend se) ---------- */
+async function renderBarChart() {
+  const el = document.getElementById("barChart");
+  if (!el) return;
+
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const values = WEEK_DATA[role];
-  document.getElementById("barChart").innerHTML = values.map((v, i) => `
+  let values = [0, 0, 0, 0, 0, 0, 0];
+
+  if (role === "student") {
+    try {
+      const res = await fetch(`/api/attendance/student/${encodeURIComponent(userId)}/summary`);
+      const data = await res.json();
+      if (data.weekly) values = data.weekly;
+    } catch (e) { /* keep zeros on failure */ }
+  }
+
+  el.innerHTML = values.map((v, i) => `
     <div class="bar-chart__col">
       <div class="bar-chart__bar" style="height:${Math.max(v, 4)}%"></div>
       <span class="bar-chart__day">${days[i]}</span>
     </div>`).join("");
 }
 
-/* ---------- Donut chart (faculty dashboard only) ----------
-   Uses the same WEEK_DATA the bar chart already uses — picks
-   "today"'s value as the present %, splits the remainder into
-   absent/late for the ring + legend. Purely additive: does not
-   touch anything the student dashboard relies on. */
-function renderDonut() {
+async function renderAttendanceLog() {
+  const body = document.getElementById("attendanceLogBody");
+  const monthPctEl = document.getElementById("monthAttendancePct");
+  const monthDeltaEl = document.getElementById("monthAttendanceDelta");
+  if (!body && !monthPctEl) return;
+
+  const res = await fetch(`/api/attendance/student/${encodeURIComponent(userId)}/summary`);
+  const data = await res.json();
+
+  if (monthPctEl) monthPctEl.textContent = `${data.percentage ?? 0}%`;
+  if (monthDeltaEl) monthDeltaEl.textContent = `${data.present_days ?? 0} of ${data.total_classes ?? 0} days present`;
+
+  if (body) {
+    const rows = data.recent_log || [];
+    body.innerHTML = rows.length
+      ? rows.map(r => `
+        <tr>
+          <td>${r.subject || "—"}</td>
+          <td>${r.date}</td>
+          <td><span class="status-pill ${r.status === "present" ? "present" : "absent"}">${capitalize(r.status)}</span></td>
+        </tr>`).join("")
+      : `<tr><td colspan="3" style="color:var(--color-paper-dim);">Abhi tak koi attendance record nahi hai.</td></tr>`;
+  }
+}
+
+/* ---------- Donut chart + stat cards (faculty dashboard only) ---------- */
+async function renderDonut() {
   const donut = document.getElementById("donutChart");
   if (!donut || role !== "teacher") return;
 
-  const values = WEEK_DATA[role];
-  const dayIndex = (new Date().getDay() + 6) % 7; // Mon=0 ... Sun=6, matches WEEK_DATA order
-  const presentPct = values[dayIndex];
-  const remainder = 100 - presentPct;
-  const absentPct = Math.round(remainder * 0.7);
-  const latePct = remainder - absentPct;
+  const res = await fetch(`/api/attendance/section/B/summary`);
+  const data = await res.json();
 
-  const totalStudents = 128; // matches "out of 128 enrolled" on the stat card
-  const presentCount = Math.round((presentPct / 100) * totalStudents);
-  const absentCount = Math.round((absentPct / 100) * totalStudents);
-  const lateCount = totalStudents - presentCount - absentCount;
+  const total = data.total_students || 0;
+  const presentCount = data.present_today || 0;
+  const absentCount = data.absent_today || 0;
+  const pendingCount = Math.max(total - presentCount - absentCount, 0);
+
+  const presentPct = total ? Math.round((presentCount / total) * 100) : 0;
+  const absentPct = total ? Math.round((absentCount / total) * 100) : 0;
+  const latePct = Math.max(100 - presentPct - absentPct, 0);
 
   donut.style.setProperty("--present", presentPct);
   donut.style.setProperty("--absent", absentPct);
@@ -335,7 +369,72 @@ function renderDonut() {
   if (absentEl) absentEl.textContent = `${absentCount} (${absentPct}%)`;
 
   const lateEl = document.getElementById("donutLateCount");
-  if (lateEl) lateEl.textContent = `${lateCount} (${latePct}%)`;
+  if (lateEl) lateEl.textContent = `${pendingCount} not marked`;
+
+  const presentValueEl = document.getElementById("facStudentsPresentValue");
+  if (presentValueEl) presentValueEl.textContent = presentCount;
+  const presentDeltaEl = document.getElementById("facStudentsPresentDelta");
+  if (presentDeltaEl) presentDeltaEl.textContent = `out of ${total} enrolled`;
+  const todayAttendanceEl = document.getElementById("facTodayAttendanceValue");
+  if (todayAttendanceEl) todayAttendanceEl.textContent = `${data.avg_attendance_pct ?? 0}%`;
+}
+
+async function renderPendingApprovalsCount() {
+  const el = document.getElementById("facPendingApprovalsValue");
+  if (!el) return;
+  const res = await fetch(`/api/leave/section/B`);
+  const data = await res.json();
+  el.textContent = data.summary?.pending ?? 0;
+}
+
+/* ---------- Roster + mark attendance (faculty dashboard only) ---------- */
+async function renderRoster() {
+  const body = document.getElementById("rosterTableBody");
+  if (!body) return;
+
+  const subjectInput = document.getElementById("rosterSubject");
+  const subject = (subjectInput?.value || "General").trim() || "General";
+
+  const res = await fetch(`/api/attendance/section/B/today?subject=${encodeURIComponent(subject)}`);
+  const data = await res.json();
+  const roster = data.roster || [];
+
+  const countLabel = document.getElementById("rosterCountLabel");
+  if (countLabel) countLabel.textContent = `${roster.length} students`;
+
+  if (roster.length === 0) {
+    body.innerHTML = `<tr><td colspan="4" style="color:var(--fl-text-dim);">Section me koi student nahi mila.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = roster.map(s => `
+    <tr>
+      <td>${s.name}</td>
+      <td>${s.roll_no || s.student_id}</td>
+      <td><span class="status-pill ${s.status === "present" ? "present" : s.status === "absent" ? "absent" : "pending"}">${capitalize(s.status)}</span></td>
+      <td>
+        <button type="button" class="btn btn-primary" style="padding:.3rem .7rem;font-size:var(--fs-xs);" data-mark="${s.student_id}" data-status="present">Present</button>
+        <button type="button" style="padding:.3rem .7rem;font-size:var(--fs-xs);margin-left:.3rem;border:1px solid #e15554;color:#e15554;border-radius:8px;background:transparent;font-weight:600;cursor:pointer;" data-mark="${s.student_id}" data-status="absent">Absent</button>
+      </td>
+    </tr>`).join("");
+
+  body.querySelectorAll("[data-mark]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      await fetch("/api/attendance/mark", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: btn.getAttribute("data-mark"),
+          user_type: "student",
+          subject,
+          date: new Date().toISOString().slice(0, 10),
+          status: btn.getAttribute("data-status"),
+        }),
+      });
+      renderRoster();
+      renderDonut();
+    });
+  });
 }
 
 function renderActivity() {
@@ -421,6 +520,9 @@ document.addEventListener("DOMContentLoaded", () => {
   renderMarksPage();
   renderLeavePage();
   renderNotificationsPage();
+  renderAttendanceLog();
+  renderRoster();
+  renderPendingApprovalsCount();
   showPage("dashboard");
 
   document.querySelectorAll("[data-nav-link]").forEach(link => {
@@ -435,6 +537,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const downloadBtn = document.getElementById("downloadReportBtn");
   if (downloadBtn) downloadBtn.addEventListener("click", downloadReportCsv);
+
+  const rosterSubject = document.getElementById("rosterSubject");
+  if (rosterSubject) rosterSubject.addEventListener("change", renderRoster);
 
   const assignTaskForm = document.getElementById("assignTaskForm");
   if (assignTaskForm) {

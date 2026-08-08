@@ -1,63 +1,163 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from datetime import date as date_type
+from datetime import date as date_type, timedelta
 
 from database.connection import get_db
-from database.models import Attendance, Notification
+from database.models import Attendance, Student
 
 router = APIRouter(prefix="/api/attendance", tags=["attendance"])
 
-LOW_ATTENDANCE_THRESHOLD = 75  # % ke neeche jaane pe warning bhejni hai
 
-
-class AttendanceMark(BaseModel):
-    user_id: str          # student_id ya faculty_id
-    user_type: str          # "student" ya "faculty"
+class MarkOne(BaseModel):
+    user_id: str
+    user_type: str = "student"
     subject: str
     date: date_type
-    status: str              # "present" / "absent"
-    marked_by: str = "manual"   # "manual" ya "ai_face_recognition"
+    status: str          # "present" / "absent"
 
 
-def _check_and_notify_low_attendance(db: Session, user_id: str, user_type: str):
-    total = db.query(Attendance).filter(Attendance.user_id == user_id).count()
-    if total == 0:
-        return
-    present = db.query(Attendance).filter(Attendance.user_id == user_id, Attendance.status == "present").count()
-    percentage = round((present / total) * 100, 1)
+class MarkRecord(BaseModel):
+    student_id: str
+    status: str
 
-    if percentage < LOW_ATTENDANCE_THRESHOLD:
-        # Bar-bar notification na bheje isliye check karo ki aaj already bheji ja chuki hai ya nahi
-        from sqlalchemy import func as sa_func
-        today_notif = db.query(Notification).filter(
-            Notification.user_id == user_id,
-            Notification.title.like("Your attendance has dropped%"),
-            sa_func.date(Notification.created_at) == date_type.today(),
-        ).first()
-        if not today_notif:
-            db.add(Notification(
-                user_id=user_id,
-                user_type=user_type,
-                title=f"Your attendance has dropped to {percentage}% — stay above {LOW_ATTENDANCE_THRESHOLD}%!",
-            ))
-            db.commit()
+
+class MarkBulk(BaseModel):
+    section: str
+    subject: str
+    date: date_type
+    records: list[MarkRecord]
+    marked_by: str = "manual"   # "manual" ya "ai_face_recognition" — teammate isi field ko use karega
+
+
+def _upsert(db: Session, user_id: str, user_type: str, subject: str, date_val, status: str, marked_by: str = "manual"):
+    existing = (
+        db.query(Attendance)
+        .filter(
+            Attendance.user_id == user_id,
+            Attendance.subject == subject,
+            Attendance.date == date_val,
+        )
+        .first()
+    )
+    if existing:
+        existing.status = status
+        existing.marked_by = marked_by
+        return existing
+
+    record = Attendance(
+        user_id=user_id, user_type=user_type, subject=subject,
+        date=date_val, status=status, marked_by=marked_by,
+    )
+    db.add(record)
+    return record
 
 
 @router.post("/mark")
-def mark_attendance(data: AttendanceMark, db: Session = Depends(get_db)):
-    record = Attendance(
-        user_id=data.user_id,
-        user_type=data.user_type,
-        subject=data.subject,
-        date=data.date,
-        status=data.status,
-        marked_by=data.marked_by,
-    )
-    db.add(record)
+def mark_one(data: MarkOne, db: Session = Depends(get_db)):
+    _upsert(db, data.user_id, data.user_type, data.subject, data.date, data.status)
     db.commit()
-
-    if data.user_type == "student":
-        _check_and_notify_low_attendance(db, data.user_id, data.user_type)
-
     return {"success": True, "message": "Attendance marked."}
+
+
+@router.post("/mark-bulk")
+def mark_bulk(data: MarkBulk, db: Session = Depends(get_db)):
+    """Faculty ek saath poore section ka attendance mark kare."""
+    for rec in data.records:
+        _upsert(db, rec.student_id, "student", data.subject, data.date, rec.status, data.marked_by)
+    db.commit()
+    return {"success": True, "message": f"{len(data.records)} students marked.", "count": len(data.records)}
+
+
+@router.get("/section/{section}/today")
+def get_section_today(section: str, subject: str = "General", db: Session = Depends(get_db)):
+    """Faculty roster — aaj ke liye har student ka status (mark hua ya pending)."""
+    today = date_type.today()
+    students = db.query(Student).filter(Student.section == section).all()
+
+    today_records = {
+        r.user_id: r.status
+        for r in db.query(Attendance).filter(
+            Attendance.date == today, Attendance.subject == subject,
+            Attendance.user_id.in_([s.student_id for s in students]) if students else False,
+        ).all()
+    }
+
+    roster = [
+        {
+            "student_id": s.student_id,
+            "name": s.name,
+            "roll_no": s.roll_no,
+            "status": today_records.get(s.student_id, "pending"),
+        }
+        for s in students
+    ]
+    return {"success": True, "date": today.isoformat(), "roster": roster}
+
+
+@router.get("/section/{section}/summary")
+def get_section_summary(section: str, db: Session = Depends(get_db)):
+    """Faculty dashboard stat cards — students present/absent today, avg attendance."""
+    today = date_type.today()
+    students = db.query(Student).filter(Student.section == section).all()
+    student_ids = [s.student_id for s in students]
+    total_students = len(student_ids)
+
+    if not student_ids:
+        return {"success": True, "present_today": 0, "absent_today": 0, "total_students": 0, "avg_attendance_pct": 0}
+
+    today_records = db.query(Attendance).filter(
+        Attendance.date == today, Attendance.user_id.in_(student_ids)
+    ).all()
+    present_today = sum(1 for r in today_records if r.status == "present")
+    absent_today = sum(1 for r in today_records if r.status == "absent")
+
+    thirty_days_ago = today - timedelta(days=30)
+    recent_records = db.query(Attendance).filter(
+        Attendance.user_id.in_(student_ids), Attendance.date >= thirty_days_ago
+    ).all()
+    total_marks = len(recent_records)
+    present_marks = sum(1 for r in recent_records if r.status == "present")
+    avg_pct = round((present_marks / total_marks) * 100) if total_marks else 0
+
+    return {
+        "success": True,
+        "present_today": present_today,
+        "absent_today": absent_today,
+        "total_students": total_students,
+        "avg_attendance_pct": avg_pct,
+    }
+
+
+@router.get("/student/{student_id}/summary")
+def get_student_summary(student_id: str, db: Session = Depends(get_db)):
+    """Student dashboard/reports — This month %, present/absent days, weekly bars."""
+    today = date_type.today()
+    all_records = db.query(Attendance).filter(Attendance.user_id == student_id).order_by(Attendance.date).all()
+
+    total = len(all_records)
+    present = sum(1 for r in all_records if r.status == "present")
+    absent = sum(1 for r in all_records if r.status == "absent")
+    pct = round((present / total) * 100) if total else 0
+
+    week_start = today - timedelta(days=today.weekday())  # Monday
+    week_map = {(week_start + timedelta(days=i)).isoformat(): 0 for i in range(7)}
+    for r in all_records:
+        key = r.date.isoformat()
+        if key in week_map and r.status == "present":
+            week_map[key] = 100
+
+    weekly = list(week_map.values())
+
+    recent = all_records[-5:][::-1]
+    recent_log = [{"subject": r.subject, "date": r.date.isoformat(), "status": r.status} for r in recent]
+
+    return {
+        "success": True,
+        "total_classes": total,
+        "present_days": present,
+        "absent_days": absent,
+        "percentage": pct,
+        "weekly": weekly,
+        "recent_log": recent_log,
+    }
