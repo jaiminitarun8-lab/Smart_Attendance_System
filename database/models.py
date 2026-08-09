@@ -15,7 +15,6 @@ class Student(Base):
     phone = Column(String, nullable=True)
     department = Column(String, nullable=True)
     section = Column(String, nullable=True)
-    college_id = Column(String, nullable=True)          # student registration ke waqt collect hota hai
     class_name = Column(String, nullable=True)         # e.g. "7", "10"
     dob = Column(String, nullable=True)
     gender = Column(String, nullable=True)
@@ -119,3 +118,17 @@ class Notification(Base):
     title = Column(String, nullable=False)
     is_read = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class Timetable(Base):
+    __tablename__ = "timetable"
+
+    id = Column(Integer, primary_key=True, index=True)
+    section = Column(String, nullable=False)
+    time_slot = Column(String, nullable=False)      # e.g. "9:00 AM"
+    monday = Column(String, nullable=True)
+    tuesday = Column(String, nullable=True)
+    wednesday = Column(String, nullable=True)
+    thursday = Column(String, nullable=True)
+    friday = Column(String, nullable=True)
+    sort_order = Column(Integer, default=0)          # row display order

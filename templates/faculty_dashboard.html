@@ -83,9 +83,9 @@
       </div>
       <div class="app-topbar__right">
         <span class="date-chip" id="statusChip">STATUS · Present today</span>
-        <span class="bell-chip">
+        <span class="bell-chip" id="notifBellBtn" data-nav-link data-page="notifications" style="cursor:pointer;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-          <span class="bell-chip__count">3</span>
+          <span class="bell-chip__count" id="notifBellCount" style="display:none;">0</span>
         </span>
         <div class="profile-chip role-teacher" id="profileChip">
           <span class="profile-chip__avatar" id="profileChipAvatar">T</span>
@@ -218,20 +218,20 @@
 
     <!-- ================= PAGE: Reports ================= -->
     <div data-page="reports">
-      <div class="stat-grid">
-        <div class="stat-card stat-card--green"><div class="stat-card__label">This term</div><div class="stat-card__value">89%</div><span class="stat-card__link">Attendance rate</span></div>
-        <div class="stat-card stat-card--blue"><div class="stat-card__label">Present days</div><div class="stat-card__value">96</div><span class="stat-card__link">out of 108</span></div>
-        <div class="stat-card stat-card--orange"><div class="stat-card__label">Absent days</div><div class="stat-card__value">12</div><span class="stat-card__link">4 excused</span></div>
-        <div class="stat-card stat-card--purple"><div class="stat-card__label">Best week</div><div class="stat-card__value">100%</div><span class="stat-card__link">Week of 14 Jul</span></div>
+    <div class="stat-grid">
+        <div class="stat-card stat-card--green"><div class="stat-card__label">This term</div><div class="stat-card__value" id="reportTermPct">—</div><span class="stat-card__link">Attendance rate</span></div>
+        <div class="stat-card stat-card--blue"><div class="stat-card__label">Present days</div><div class="stat-card__value" id="reportPresentDays">—</div><span class="stat-card__link">Total present</span></div>
+        <div class="stat-card stat-card--orange"><div class="stat-card__label">Absent days</div><div class="stat-card__value" id="reportAbsentDays">—</div><span class="stat-card__link">Total absent</span></div>
+        <div class="stat-card stat-card--purple"><div class="stat-card__label">Best month</div><div class="stat-card__value" id="reportBestWeek">—</div><span class="stat-card__link">Highest rate</span></div>
       </div>
       <div class="table-panel">
         <div class="panel__head">
           <h2>Monthly breakdown</h2>
           <button type="button" class="btn btn-ghost" id="downloadReportBtn" style="padding:.4rem .9rem;font-size:var(--fs-xs);">Download CSV</button>
         </div>
-        <table class="data-table" id="reportTable">
+       <table class="data-table" id="reportTable">
           <thead><tr><th>Month</th><th>Present</th><th>Absent</th><th>Rate</th></tr></thead>
-          <tbody>
+          <tbody id="reportTableBody">
             <tr><td>March</td><td>21</td><td>1</td><td><span class="status-pill present">95%</span></td></tr>
             <tr><td>April</td><td>19</td><td>3</td><td><span class="status-pill present">86%</span></td></tr>
             <tr><td>May</td><td>18</td><td>4</td><td><span class="status-pill pending">82%</span></td></tr>
@@ -401,6 +401,17 @@
       </div>
     </div>
     <!-- ================= /PAGE: Settings ================= -->
+
+    <!-- ================= PAGE: Notifications ================= -->
+    <div data-page="notifications">
+      <div class="table-panel">
+        <div class="panel__head"><h2>Notifications</h2><span id="notificationCountLabel">—</span></div>
+        <div class="activity-list" id="notificationsList">
+          <p style="color:var(--fl-text-dim);font-size:var(--fs-sm);">Loading…</p>
+        </div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Notifications ================= -->
 
   </main>
 </div>
