@@ -317,6 +317,8 @@ async function renderAttendanceLog() {
   const body = document.getElementById("attendanceLogBody");
   const monthPctEl = document.getElementById("monthAttendancePct");
   const monthDeltaEl = document.getElementById("monthAttendanceDelta");
+  const riskValueEl = document.getElementById("riskStatusValue");
+  const riskDeltaEl = document.getElementById("riskStatusDelta");
   if (!body && !monthPctEl) return;
 
   const res = await fetch(`/api/attendance/student/${encodeURIComponent(userId)}/summary`);
@@ -324,6 +326,17 @@ async function renderAttendanceLog() {
 
   if (monthPctEl) monthPctEl.textContent = `${data.percentage ?? 0}%`;
   if (monthDeltaEl) monthDeltaEl.textContent = `${data.present_days ?? 0} of ${data.total_classes ?? 0} days present`;
+  if (riskValueEl) {
+    const risk = data.risk_level || "green";
+    riskValueEl.textContent = risk.toUpperCase();
+    riskValueEl.className = "stat-card__value " + (risk === "red" ? "absent" : risk === "yellow" ? "pending" : "present");
+  }
+  if (riskDeltaEl) {
+    const risk = data.risk_level || "green";
+    if (risk === "red") riskDeltaEl.textContent = "Low attendance - please improve";
+    else if (risk === "yellow") riskDeltaEl.textContent = "Attendance needs attention";
+    else riskDeltaEl.textContent = "Attendance is healthy";
+  }
 
   if (body) {
     const rows = data.recent_log || [];
