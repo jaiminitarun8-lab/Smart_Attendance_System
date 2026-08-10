@@ -9,7 +9,7 @@ Chalane ka tarika:
 from datetime import date, timedelta
 
 from database.connection import Base, engine, SessionLocal
-from database.models import Student, Faculty, Attendance, Leave, Task, TaskCompletion, Mark, Activity
+from database.models import Student, Faculty, Attendance, Leave, Task, TaskCompletion, Mark, Activity, TimetableEntry
 from utils.security import hash_password
 
 
@@ -126,6 +126,21 @@ def seed_data():
                   type="extracurricular", event_date=None),
     ]
     db.add_all(activities)
+    db.commit()
+
+    # ---------------- Sample Timetable (Section B) ----------------
+    timetable_rows = [
+        ("9:00 AM", ["Mathematics", "Physics", "Mathematics", "Chemistry", "English"]),
+        ("10:30 AM", ["Physics", "Chemistry", "English", "Mathematics", "Physics"]),
+        ("1:30 PM", ["Chemistry", "Computer Sci.", "Physics", "English", "Computer Sci."]),
+        ("3:00 PM", ["English", "Free period", "Computer Sci.", "Free period", "Free period"]),
+    ]
+    days = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    timetable_entries = []
+    for time_slot, subjects in timetable_rows:
+        for day, subject in zip(days, subjects):
+            timetable_entries.append(TimetableEntry(section="B", day=day, time_slot=time_slot, subject=subject))
+    db.add_all(timetable_entries)
 
     db.commit()
     db.close()
@@ -138,6 +153,7 @@ def seed_data():
     print(f"   - {len(tasks)} tasks")
     print(f"   - {len(marks_records)} marks records")
     print(f"   - {len(activities)} activities")
+    print(f"   - {len(timetable_entries)} timetable entries")
     print("\nLogin karne ke liye use karo:")
     print("   Student → ID: S2026-0001   Password: student123")
     print("   Faculty → ID: F2026-0001   Password: faculty123")

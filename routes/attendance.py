@@ -169,3 +169,69 @@ def get_student_summary(student_id: str, db: Session = Depends(get_db)):
         "risk_level": risk_level,
 
     }
+
+
+def _month_label(d: date_type) -> str:
+    return d.strftime("%B")   # "March", "April" ...
+
+
+def _monthly_breakdown(records: list) -> dict:
+    """Common helper — records ko month-wise group karke present/absent/rate nikalta hai."""
+    by_month = {}   # "2026-03" -> {"present": n, "absent": n, "order": date}
+    for r in records:
+        key = r.date.strftime("%Y-%m")
+        if key not in by_month:
+            by_month[key] = {"present": 0, "absent": 0, "order": r.date.replace(day=1)}
+        if r.status == "present":
+            by_month[key]["present"] += 1
+        elif r.status == "absent":
+            by_month[key]["absent"] += 1
+
+    sorted_months = sorted(by_month.items(), key=lambda kv: kv[1]["order"])
+
+    months = []
+    total_present = 0
+    total_absent = 0
+    best_rate = 0
+    for _, m in sorted_months:
+        total = m["present"] + m["absent"]
+        rate = round((m["present"] / total) * 100) if total else 0
+        best_rate = max(best_rate, rate)
+        months.append({
+            "month": _month_label(m["order"]),
+            "present": m["present"],
+            "absent": m["absent"],
+            "rate": rate,
+        })
+        total_present += m["present"]
+        total_absent += m["absent"]
+
+    overall_total = total_present + total_absent
+    overall_pct = round((total_present / overall_total) * 100) if overall_total else 0
+
+    return {
+        "months": months,
+        "present_days": total_present,
+        "absent_days": total_absent,
+        "overall_pct": overall_pct,
+        "best_rate": best_rate,
+    }
+
+
+@router.get("/student/{student_id}/monthly")
+def get_student_monthly(student_id: str, db: Session = Depends(get_db)):
+    """Student Reports page — month-wise breakdown."""
+    records = db.query(Attendance).filter(Attendance.user_id == student_id).order_by(Attendance.date).all()
+    return {"success": True, **_monthly_breakdown(records)}
+
+
+@router.get("/section/{section}/monthly")
+def get_section_monthly(section: str, db: Session = Depends(get_db)):
+    """Faculty Reports page — month-wise breakdown across the whole section."""
+    students = db.query(Student).filter(Student.section == section).all()
+    student_ids = [s.student_id for s in students]
+    if not student_ids:
+        return {"success": True, "months": [], "present_days": 0, "absent_days": 0, "overall_pct": 0, "best_rate": 0}
+
+    records = db.query(Attendance).filter(Attendance.user_id.in_(student_ids)).order_by(Attendance.date).all()
+    return {"success": True, **_monthly_breakdown(records)}

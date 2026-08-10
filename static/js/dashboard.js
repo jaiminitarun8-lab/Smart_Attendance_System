@@ -7,11 +7,6 @@ const userName = params.get("name") || (role === "teacher" ? "Faculty" : "Studen
 
 function capitalize(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : ""; }
 
-const WEEK_DATA = {
-  teacher: [78, 85, 90, 82, 88, 60, 40],
-  student: [100, 100, 80, 100, 100, 0, 0]
-};
-
 const ACTIVITY = {
   teacher: [
     { present: true, text: "Section B marked present — 28 students", time: "2 min ago" },
@@ -24,23 +19,6 @@ const ACTIVITY = {
     { present: true, text: "Checked in to Physics", time: "10:31 AM" },
     { present: false, text: "Missed Chemistry", time: "Yesterday" },
     { present: true, text: "Checked in to English", time: "Yesterday" }
-  ]
-};
-
-const TIMETABLE = {
-  teacher: [
-    ["9:00 AM", "Section A", "Section C", "Section A", "Section B", "Section C"],
-    ["10:30 AM", "Section B", "Free period", "Section B", "Section A", "Free period"],
-    ["12:30 PM", "Lunch", "Lunch", "Lunch", "Lunch", "Lunch"],
-    ["1:30 PM", "Section C", "Section A", "Free period", "Section C", "Section B"],
-    ["3:00 PM", "Staff meeting", "Section B", "Section A", "Free period", "Section A"]
-  ],
-  student: [
-    ["9:00 AM", "Mathematics", "Physics", "Mathematics", "Chemistry", "English"],
-    ["10:30 AM", "Physics", "Chemistry", "English", "Mathematics", "Physics"],
-    ["12:30 PM", "Lunch", "Lunch", "Lunch", "Lunch", "Lunch"],
-    ["1:30 PM", "Chemistry", "Computer Sci.", "Physics", "English", "Computer Sci."],
-    ["3:00 PM", "English", "Free period", "Computer Sci.", "Free period", "Free period"]
   ]
 };
 
@@ -259,6 +237,18 @@ async function renderLeavePage() {
 }
 
 /* ---------- Notifications (real backend se) ---------- */
+async function renderBellCount() {
+  const el = document.getElementById("notifBellCount");
+  if (!el || !userId) return;
+  try {
+    const res = await fetch(`/api/notifications/${encodeURIComponent(userId)}`);
+    const data = await res.json();
+    const count = data.unread_count || 0;
+    el.textContent = count;
+    el.style.display = count > 0 ? "flex" : "none";
+  } catch (e) { /* ignore */ }
+}
+
 async function renderNotificationsPage() {
   const list = document.getElementById("notificationsList");
   if (!list) return;
@@ -286,6 +276,7 @@ async function renderNotificationsPage() {
     row.addEventListener("click", async () => {
       await fetch(`/api/notifications/${row.getAttribute("data-notif-id")}/read`, { method: "POST" });
       renderNotificationsPage();
+      renderBellCount();
     });
   });
 }
@@ -349,6 +340,59 @@ async function renderAttendanceLog() {
         </tr>`).join("")
       : `<tr><td colspan="3" style="color:var(--color-paper-dim);">Abhi tak koi attendance record nahi hai.</td></tr>`;
   }
+}
+
+/* ---------- Reports page: monthly breakdown (real backend se) ---------- */
+async function renderReportsPage() {
+  const tableBody = document.getElementById("reportTableBody");
+  const termPctEl = document.getElementById("reportTermPct");
+  const presentDaysEl = document.getElementById("reportPresentDays");
+  const absentDaysEl = document.getElementById("reportAbsentDays");
+  const bestWeekEl = document.getElementById("reportBestWeek");
+  if (!tableBody && !termPctEl) return;
+
+  const endpoint = role === "student"
+    ? `/api/attendance/student/${encodeURIComponent(userId)}/monthly`
+    : `/api/attendance/section/B/monthly`;
+
+  const res = await fetch(endpoint);
+  const data = await res.json();
+  const months = data.months || [];
+
+  if (termPctEl) termPctEl.textContent = `${data.overall_pct ?? 0}%`;
+  if (presentDaysEl) presentDaysEl.textContent = data.present_days ?? 0;
+  if (absentDaysEl) absentDaysEl.textContent = data.absent_days ?? 0;
+  if (bestWeekEl) bestWeekEl.textContent = `${data.best_rate ?? 0}%`;
+
+  if (tableBody) {
+    tableBody.innerHTML = months.length
+      ? months.map(m => `
+        <tr>
+          <td>${m.month}</td>
+          <td>${m.present}</td>
+          <td>${m.absent}</td>
+          <td><span class="status-pill ${m.rate >= 75 ? "present" : m.rate >= 50 ? "pending" : "absent"}">${m.rate}%</span></td>
+        </tr>`).join("")
+      : `<tr><td colspan="4" style="color:var(--color-paper-dim);">Abhi tak koi attendance record nahi hai.</td></tr>`;
+  }
+}
+
+/* ---------- Timetable (real backend se) ---------- */
+async function renderTimetable() {
+  const body = document.getElementById("timetableBody");
+  if (!body) return;
+
+  const res = await fetch(`/api/timetable/section/B`);
+  const data = await res.json();
+  const rows = data.rows || [];
+
+  body.innerHTML = rows.length
+    ? rows.map(row => `
+      <tr>
+        <td style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--color-paper-dim);">${row.time}</td>
+        <td>${row.Mon}</td><td>${row.Tue}</td><td>${row.Wed}</td><td>${row.Thu}</td><td>${row.Fri}</td>
+      </tr>`).join("")
+    : `<tr><td colspan="6" style="color:var(--color-paper-dim);">Timetable abhi set nahi hui hai.</td></tr>`;
 }
 
 /* ---------- Donut chart + stat cards (faculty dashboard only) ---------- */
@@ -459,15 +503,6 @@ function renderActivity() {
     </div>`).join("");
 }
 
-function renderTimetable() {
-  const body = document.getElementById("timetableBody");
-  body.innerHTML = TIMETABLE[role].map(row => `
-    <tr>
-      <td style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--color-paper-dim);">${row[0]}</td>
-      ${row.slice(1).map(cell => `<td>${cell}</td>`).join("")}
-    </tr>`).join("");
-}
-
 function populateProfile() {
   document.getElementById("profileAvatar").textContent = userName.charAt(0).toUpperCase();
   document.getElementById("profileName").textContent = userName;
@@ -528,11 +563,13 @@ document.addEventListener("DOMContentLoaded", () => {
   renderDonut();
   renderActivity();
   renderTimetable();
+  renderReportsPage();
   renderTasks();
   renderActivitiesPage();
   renderMarksPage();
   renderLeavePage();
   renderNotificationsPage();
+  renderBellCount();
   renderAttendanceLog();
   renderRoster();
   renderPendingApprovalsCount();
