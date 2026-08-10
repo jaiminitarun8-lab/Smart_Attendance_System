@@ -308,6 +308,8 @@ async function renderAttendanceLog() {
   const body = document.getElementById("attendanceLogBody");
   const monthPctEl = document.getElementById("monthAttendancePct");
   const monthDeltaEl = document.getElementById("monthAttendanceDelta");
+  const riskValueEl = document.getElementById("riskStatusValue");
+  const riskDeltaEl = document.getElementById("riskStatusDelta");
   if (!body && !monthPctEl) return;
 
   const res = await fetch(`/api/attendance/student/${encodeURIComponent(userId)}/summary`);
@@ -315,6 +317,44 @@ async function renderAttendanceLog() {
 
   if (monthPctEl) monthPctEl.textContent = `${data.percentage ?? 0}%`;
   if (monthDeltaEl) monthDeltaEl.textContent = `${data.present_days ?? 0} of ${data.total_classes ?? 0} days present`;
+  if (riskValueEl) {
+    const risk = data.risk_level || "green";
+    riskValueEl.textContent = risk.toUpperCase();
+    riskValueEl.className = "stat-card__value " + (risk === "red" ? "absent" : risk === "yellow" ? "pending" : "present");
+  }
+  if (riskDeltaEl) {
+    const risk = data.risk_level || "green";
+    if (risk === "red") riskDeltaEl.textContent = "Low attendance - please improve";
+    else if (risk === "yellow") riskDeltaEl.textContent = "Attendance needs attention";
+    else riskDeltaEl.textContent = "Attendance is healthy";
+  }
+
+  const donutSvg = document.getElementById("attendanceDonut");
+  const donutLegend = document.getElementById("donutLegend");
+  if (donutSvg) {
+    const present = data.present_days ?? 0;
+    const absent = data.absent_days ?? 0;
+    const total = present + absent || 1;
+    const presentPct = present / total;
+
+    const radius = 70;
+    const circumference = 2 * Math.PI * radius;
+    const presentLength = circumference * presentPct;
+
+    donutSvg.innerHTML = `
+      <circle cx="90" cy="90" r="${radius}" fill="none" stroke="#e05252" stroke-width="24"></circle>
+      <circle cx="90" cy="90" r="${radius}" fill="none" stroke="#3fae5c" stroke-width="24"
+        stroke-dasharray="${presentLength} ${circumference}"
+        stroke-dashoffset="0"
+        transform="rotate(-90 90 90)"></circle>
+      <text x="90" y="85" text-anchor="middle" font-size="26" font-weight="700" fill="var(--color-paper)">${Math.round(presentPct * 100)}%</text>
+      <text x="90" y="108" text-anchor="middle" font-size="12" fill="var(--color-paper-dim)">Present</text>
+    `;
+
+    if (donutLegend) {
+      donutLegend.innerHTML = `<span style="color:#3fae5c;">● Present ${present}</span> &nbsp; <span style="color:#e05252;">● Absent ${absent}</span>`;
+    }
+  }
 
   if (body) {
     const rows = data.recent_log || [];

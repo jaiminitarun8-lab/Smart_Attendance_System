@@ -140,6 +140,13 @@ def get_student_summary(student_id: str, db: Session = Depends(get_db)):
     absent = sum(1 for r in all_records if r.status == "absent")
     pct = round((present / total) * 100) if total else 0
 
+    if pct >= 85:
+        risk_level = "green"
+    elif pct >= 60:
+        risk_level = "yellow"
+    else:
+        risk_level = "red"
+
     week_start = today - timedelta(days=today.weekday())  # Monday
     week_map = {(week_start + timedelta(days=i)).isoformat(): 0 for i in range(7)}
     for r in all_records:
@@ -159,7 +166,8 @@ def get_student_summary(student_id: str, db: Session = Depends(get_db)):
         "absent_days": absent,
         "percentage": pct,
         "weekly": weekly,
-        "recent_log": recent_log,
+        "risk_level": risk_level,
+
     }
 
 

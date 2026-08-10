@@ -184,6 +184,12 @@
         </div>
 
         <div class="stat-card">
+          <div class="stat-card__label">Risk Status</div>
+          <div class="stat-card__value" id="riskStatusValue">—</div>
+          <div class="stat-card__delta" id="riskStatusDelta">Loading…</div>
+        </div>
+
+        <div class="stat-card">
           <div class="stat-card__label">Current streak</div>
           <div class="stat-card__value">6 days</div>
           <div class="stat-card__delta">Personal best: 14 days</div>
@@ -215,6 +221,19 @@
 
           <div class="bar-chart" id="barChart"></div>
 
+        </div>
+
+        <div class="panel">
+          <div class="panel__head">
+            <h2>Attendance breakdown</h2>
+            <span>This term</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;padding:1rem 0;">
+            <svg id="attendanceDonut" width="180" height="180" viewBox="0 0 180 180"></svg>
+          </div>
+          <div style="text-align:center;font-size:var(--fs-sm);color:var(--color-paper-dim);">
+            <span id="donutLegend"></span>
+          </div>
         </div>
 
 
