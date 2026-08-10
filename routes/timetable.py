@@ -7,59 +7,89 @@ from database.models import Timetable
 
 router = APIRouter(prefix="/api/timetable", tags=["timetable"])
 
+DAY_ORDER = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
 
 class TimetableRow(BaseModel):
     section: str
+    day: str            # "Mon" / "Tue" / "Wed" / "Thu" / "Fri"
     time_slot: str
-    monday: str = ""
-    tuesday: str = ""
-    wednesday: str = ""
-    thursday: str = ""
-    friday: str = ""
-    sort_order: int = 0
+    subject: str
+    faculty_id: str | None = None
 
 
 @router.get("/section/{section}")
 def get_timetable(section: str, db: Session = Depends(get_db)):
-    rows = (
-        db.query(Timetable)
-        .filter(Timetable.section == section)
-        .order_by(Timetable.sort_order, Timetable.time_slot)
-        .all()
-    )
-    return {
-        "success": True,
-        "rows": [
-            {
-                "time": r.time_slot,
-                "Mon": r.monday or "—",
-                "Tue": r.tuesday or "—",
-                "Wed": r.wednesday or "—",
-                "Thu": r.thursday or "—",
-                "Fri": r.friday or "—",
-            }
-            for r in rows
-        ],
-    }
+    """attendance.db me timetable row-per-day format me stored hai
+    (section, day, time_slot, subject, faculty_id) — is function ka kaam
+    unhe time_slot ke hisaab se group karke Mon..Fri wide grid banana hai,
+    jaisa frontend expect karta hai."""
+    rows = db.query(Timetable).filter(Timetable.section == section).all()
+
+    # time_slot -> {"Mon": subject, "Tue": subject, ...}
+    grid: dict[str, dict[str, str]] = {}
+    for r in rows:
+        if r.time_slot not in grid:
+            grid[r.time_slot] = {}
+        grid[r.time_slot][r.day] = r.subject
+
+    def sort_key(time_slot: str):
+        # "9:00 AM" jaise strings ko sahi time order me sort karne ke liye
+        try:
+            from datetime import datetime
+            return datetime.strptime(time_slot.strip(), "%I:%M %p")
+        except ValueError:
+            return time_slot
+
+    sorted_slots = sorted(grid.keys(), key=sort_key)
+
+    result_rows = [
+        {
+            "time": slot,
+            "Mon": grid[slot].get("Mon", "—"),
+            "Tue": grid[slot].get("Tue", "—"),
+            "Wed": grid[slot].get("Wed", "—"),
+            "Thu": grid[slot].get("Thu", "—"),
+            "Fri": grid[slot].get("Fri", "—"),
+        }
+        for slot in sorted_slots
+    ]
+
+    return {"success": True, "rows": result_rows}
 
 
 @router.post("")
 def add_row(data: TimetableRow, db: Session = Depends(get_db)):
-    """Faculty/admin ek naya timetable row add kare (abhi UI form nahi hai, /docs se test kar sakte ho)."""
+    """Ek naya (section, day, time_slot) ka period add/update kare.
+    Agar wahi section+day+time_slot pehle se hai to subject overwrite ho jayega
+    (duplicate periods na banein isliye)."""
+    existing = (
+        db.query(Timetable)
+        .filter(
+            Timetable.section == data.section,
+            Timetable.day == data.day,
+            Timetable.time_slot == data.time_slot,
+        )
+        .first()
+    )
+
+    if existing:
+        existing.subject = data.subject
+        existing.faculty_id = data.faculty_id
+        db.commit()
+        return {"success": True, "id": existing.id, "message": "Period updated."}
+
     row = Timetable(
         section=data.section,
+        day=data.day,
         time_slot=data.time_slot,
-        monday=data.monday,
-        tuesday=data.tuesday,
-        wednesday=data.wednesday,
-        thursday=data.thursday,
-        friday=data.friday,
-        sort_order=data.sort_order,
+        subject=data.subject,
+        faculty_id=data.faculty_id,
     )
     db.add(row)
     db.commit()
     db.refresh(row)
-    return {"success": True, "id": row.id}
+    return {"success": True, "id": row.id, "message": "Period added."}
 
 
 @router.delete("/{row_id}")
