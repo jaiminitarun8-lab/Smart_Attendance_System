@@ -8,146 +8,230 @@ from ai.subject import get_subject_attendance
 from ai.intent import detect_intent
 from ai.predictor import predict_attendance
 
+
 router = APIRouter()
 
 
+# =====================================================
+# Chat Request Model
+# =====================================================
+
 class ChatRequest(BaseModel):
     message: str
-    user_id: str
-    role: str
+    user_id: str = ""
+    role: str = "student"
 
+
+# =====================================================
+# Chat API
+# =====================================================
 
 @router.post("/api/chat")
 def chat(data: ChatRequest):
 
-    msg = data.message.lower()
-    intent = detect_intent(msg)
+    try:
 
-    # ==========================
-    # Attendance
-    # ==========================
-    if intent == "attendance":
+        # User message
+        msg = data.message.lower().strip()
 
-        result = get_attendance(data.user_id)
+        # Detect intent
+        intent = detect_intent(msg)
 
-        return {
-            "reply": f"""📊 Attendance Report
 
-Present : {result['present']}
-Total Classes : {result['total']}
-Attendance : {result['percentage']}%
-"""
-        }
+        # =================================================
+        # Greeting
+        # =================================================
 
-    # ==========================
-    # Leave
-    # ==========================
-    elif intent == "leave":
-
-        leave = get_leave(data.user_id)
-
-        return {
-            "reply": f"""📄 Leave Status
-
-Status : {leave['status']}
-Reason : {leave['reason']}
-"""
-        }
-
-    # ==========================
-    # Today's Attendance
-    # ==========================
-    elif intent == "today":
-
-        today = get_today_attendance(data.user_id)
-
-        if today:
-            return {
-                "reply": f"""📅 Today's Attendance
-
-Subject : {today['subject']}
-
-Status : {today['status']}
-
-Date : {today['date']}
-"""
-            }
-
-        return {
-            "reply": "No attendance found."
-        }
-
-    # ==========================
-    # Mathematics Attendance
-    # ==========================
-    elif intent == "mathematics":
-
-        result = get_subject_attendance(
-            data.user_id,
-            "Mathematics"
-        )
-
-        if result:
-            return {
-                "reply": f"""📚 Mathematics Attendance
-
-Present : {result['present']}
-Total : {result['total']}
-Attendance : {result['percentage']}%
-"""
-            }
-
-        return {
-            "reply": "No Mathematics attendance found."
-        }
-
-    # ==========================
-    # Attendance Prediction
-    # ==========================
-    elif intent == "prediction":
-
-        result = predict_attendance(data.user_id)
-
-        if result:
-            return {
-                "reply": f"""📈 Attendance Prediction
-
-Current Attendance : {result['current']}%
-
-Target : {result['target']}%
-
-Need {result['needed']} more continuous present classes to reach {result['target']}%.
-"""
-            }
-
-        return {
-            "reply": "Attendance data not found."
-        }
-
-    # ==========================
-    # Greeting
-    # ==========================
-    elif "hello" in msg or "hi" in msg:
-
-        return {
-            "reply": "Hello 👋 Welcome to Smart Attendance AI Assistant."
-        }
-
-    # ==========================
-    # Gemini AI
-    # ==========================
-    else:
-
-        try:
-
-            reply = ask_gemini(data.message)
+        if (
+            "hello" in msg
+            or "hi" in msg
+            or "hey" in msg
+            or "hii" in msg
+            or "helo" in msg
+        ):
 
             return {
-                "reply": reply
+                "reply": (
+                    "Hello 👋\n\n"
+                    "Welcome to Smart Attendance AI Assistant.\n\n"
+                    "I can help you with:\n"
+                    "• Attendance\n"
+                    "• Leave status\n"
+                    "• Today's attendance\n"
+                    "• Mathematics attendance\n"
+                    "• Attendance prediction"
+                )
             }
 
-        except Exception as e:
+
+        # =================================================
+        # Check User ID
+        # =================================================
+
+        if not data.user_id:
 
             return {
-                "reply": f"Gemini Error: {str(e)}"
+                "reply": (
+                    "⚠️ Student ID not found.\n\n"
+                    "Please login again and then use the chatbot."
+                )
             }
+
+
+        # =================================================
+        # Attendance
+        # =================================================
+
+        if intent == "attendance":
+
+            result = get_attendance(data.user_id)
+
+            if result:
+
+                return {
+                    "reply": (
+                        "📊 Attendance Report\n\n"
+                        f"Present : {result.get('present', 0)}\n"
+                        f"Total Classes : {result.get('total', 0)}\n"
+                        f"Attendance : {result.get('percentage', 0)}%"
+                    )
+                }
+
+            return {
+                "reply": "No attendance data found."
+            }
+
+
+        # =================================================
+        # Leave
+        # =================================================
+
+        elif intent == "leave":
+
+            leave = get_leave(data.user_id)
+
+            if leave:
+
+                return {
+                    "reply": (
+                        "📄 Leave Status\n\n"
+                        f"Status : {leave.get('status', 'Not available')}\n"
+                        f"Reason : {leave.get('reason', 'Not available')}"
+                    )
+                }
+
+            return {
+                "reply": "No leave record found."
+            }
+
+
+        # =================================================
+        # Today's Attendance
+        # =================================================
+
+        elif intent == "today":
+
+            today = get_today_attendance(data.user_id)
+
+            if today:
+
+                return {
+                    "reply": (
+                        "📅 Today's Attendance\n\n"
+                        f"Subject : {today.get('subject', 'N/A')}\n"
+                        f"Status : {today.get('status', 'N/A')}\n"
+                        f"Date : {today.get('date', 'N/A')}"
+                    )
+                }
+
+            return {
+                "reply": "No attendance found for today."
+            }
+
+
+        # =================================================
+        # Mathematics Attendance
+        # =================================================
+
+        elif intent == "mathematics":
+
+            result = get_subject_attendance(
+                data.user_id,
+                "Mathematics"
+            )
+
+            if result:
+
+                return {
+                    "reply": (
+                        "📚 Mathematics Attendance\n\n"
+                        f"Present : {result.get('present', 0)}\n"
+                        f"Total : {result.get('total', 0)}\n"
+                        f"Attendance : {result.get('percentage', 0)}%"
+                    )
+                }
+
+            return {
+                "reply": "No Mathematics attendance found."
+            }
+
+
+        # =================================================
+        # Attendance Prediction
+        # =================================================
+
+        elif intent == "prediction":
+
+            result = predict_attendance(data.user_id)
+
+            if result:
+
+                return {
+                    "reply": (
+                        "📈 Attendance Prediction\n\n"
+                        f"Current Attendance : {result.get('current', 0)}%\n"
+                        f"Target : {result.get('target', 75)}%\n"
+                        f"Need {result.get('needed', 0)} more continuous "
+                        f"present classes to reach "
+                        f"{result.get('target', 75)}%."
+                    )
+                }
+
+            return {
+                "reply": "Attendance data not found."
+            }
+
+
+        # =================================================
+        # Default Response
+        # =================================================
+
+        else:
+
+            return {
+                "reply": (
+                    "🤖 I am AttendAI Assistant.\n\n"
+                    "Try asking:\n\n"
+                    "📊 What is my attendance?\n"
+                    "📄 Show my leave status\n"
+                    "📅 What is today's attendance?\n"
+                    "📚 Show Mathematics attendance\n"
+                    "📈 Predict my attendance"
+                )
+            }
+
+
+    # =====================================================
+    # Error Handling
+    # =====================================================
+
+    except Exception as e:
+
+        print("CHATBOT ERROR:", str(e))
+
+        return {
+            "reply": (
+                "❌ Sorry, something went wrong while "
+                "processing your request."
+            )
+        }

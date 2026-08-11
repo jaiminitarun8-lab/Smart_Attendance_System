@@ -11,41 +11,46 @@ const chatBody = document.querySelector(".chat-body");
 // Open / Close Chat
 // =========================
 
-chatToggle.addEventListener("click", () => {
+if (chatToggle && chatBox) {
 
-    if (chatBox.style.display === "block") {
+    chatToggle.addEventListener("click", () => {
 
-        chatBox.style.display = "none";
+        if (chatBox.style.display === "block") {
+            chatBox.style.display = "none";
+        } else {
+            chatBox.style.display = "block";
+        }
 
-    } else {
+    });
 
-        chatBox.style.display = "block";
-
-    }
-
-});
+}
 
 
 // =========================
 // Send Button
 // =========================
 
-sendBtn.addEventListener("click", sendMessage);
+if (sendBtn) {
+    sendBtn.addEventListener("click", sendMessage);
+}
 
 
 // =========================
 // Enter Key
 // =========================
 
-chatInput.addEventListener("keypress", function (e) {
+if (chatInput) {
 
-    if (e.key === "Enter") {
+    chatInput.addEventListener("keypress", function (e) {
 
-        sendMessage();
+        if (e.key === "Enter") {
+            e.preventDefault();
+            sendMessage();
+        }
 
-    }
+    });
 
-});
+}
 
 
 // =========================
@@ -56,36 +61,46 @@ async function sendMessage() {
 
     const message = chatInput.value.trim();
 
-    if (message === "") return;
+    if (message === "") {
+        return;
+    }
 
 
+    // =========================
     // User Message
+    // =========================
 
     chatBody.innerHTML += `
         <div class="user-message">
-            ${message}
+            ${escapeHtml(message)}
         </div>
     `;
 
     chatInput.value = "";
 
+    chatBody.scrollTop = chatBody.scrollHeight;
+
 
     try {
+
+        // =========================
+        // Backend API Call
+        // =========================
 
         const response = await fetch("/api/chat", {
 
             method: "POST",
 
             headers: {
-
                 "Content-Type": "application/json"
-
             },
 
             body: JSON.stringify({
 
                 message: message,
+
                 user_id: localStorage.getItem("user_id"),
+
                 role: localStorage.getItem("user_role")
 
             })
@@ -93,56 +108,114 @@ async function sendMessage() {
         });
 
 
+        // =========================
+        // Check HTTP Response
+        // =========================
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Server returned " + response.status
+            );
+
+        }
+
+
         const data = await response.json();
 
+        console.log("Chatbot API Response:", data);
 
+
+        // =========================
+        // Get Bot Reply
+        // =========================
+
+        const reply =
+            data.reply ||
+            data.message ||
+            data.response ||
+            "Sorry, mujhe abhi response nahi mila.";
+
+
+        // =========================
         // Bot Message
+        // =========================
 
         chatBody.innerHTML += `
             <div class="bot-message">
-                ${data.reply}
+                ${escapeHtml(String(reply))}
             </div>
         `;
 
 
+        // =========================
         // Voice Reply
+        // =========================
 
-        const voice = new SpeechSynthesisUtterance(data.reply);
+        if ("speechSynthesis" in window) {
 
-        voice.lang = "en-IN";
+            const voice =
+                new SpeechSynthesisUtterance(String(reply));
 
-        window.speechSynthesis.cancel();
+            voice.lang = "en-IN";
 
-        window.speechSynthesis.speak(voice);
+            voice.rate = 1;
+
+            voice.pitch = 1;
+
+            window.speechSynthesis.cancel();
+
+            window.speechSynthesis.speak(voice);
+
+        }
 
 
+        // =========================
         // Scroll
+        // =========================
 
         chatBody.scrollTop = chatBody.scrollHeight;
 
     }
 
+
     catch (error) {
 
-        console.error(error);
+        console.error("Chatbot Error:", error);
 
         chatBody.innerHTML += `
             <div class="bot-message">
-                ❌ Server Error
+                ❌ Chatbot server se response nahi mila.
             </div>
         `;
+
+        chatBody.scrollTop = chatBody.scrollHeight;
 
     }
 
 }
 
 
+// =========================
+// HTML Safety
+// =========================
+
+function escapeHtml(text) {
+
+    const div = document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+
+}
+
 
 // =========================
 // Voice Assistant
 // =========================
 
-if ('webkitSpeechRecognition' in window) {
+if ("webkitSpeechRecognition" in window) {
 
     const recognition = new webkitSpeechRecognition();
 
@@ -153,30 +226,65 @@ if ('webkitSpeechRecognition' in window) {
     recognition.interimResults = false;
 
 
-    micBtn.addEventListener("click", () => {
+    // =========================
+    // Mic Button
+    // =========================
 
-        recognition.start();
+    if (micBtn) {
 
-    });
+        micBtn.addEventListener("click", () => {
 
+            try {
+
+                recognition.start();
+
+            } catch (error) {
+
+                console.log(
+                    "Recognition already running."
+                );
+
+            }
+
+        });
+
+    }
+
+
+    // =========================
+    // Recognition Start
+    // =========================
 
     recognition.onstart = () => {
 
-        micBtn.innerHTML = "🎙️";
+        if (micBtn) {
+            micBtn.innerHTML = "🎙️";
+        }
 
     };
 
+
+    // =========================
+    // Recognition End
+    // =========================
 
     recognition.onend = () => {
 
-        micBtn.innerHTML = "🎤";
+        if (micBtn) {
+            micBtn.innerHTML = "🎤";
+        }
 
     };
 
 
+    // =========================
+    // Speech Result
+    // =========================
+
     recognition.onresult = (event) => {
 
-        const speech = event.results[0][0].transcript;
+        const speech =
+            event.results[0][0].transcript;
 
         chatInput.value = speech;
 
@@ -184,9 +292,29 @@ if ('webkitSpeechRecognition' in window) {
 
     };
 
+
+    // =========================
+    // Recognition Error
+    // =========================
+
+    recognition.onerror = (event) => {
+
+        console.error(
+            "Speech Recognition Error:",
+            event.error
+        );
+
+        if (micBtn) {
+            micBtn.innerHTML = "🎤";
+        }
+
+    };
+
 }
 else {
 
-    console.log("Speech Recognition not supported.");
+    console.log(
+        "Speech Recognition not supported in this browser."
+    );
 
 }
