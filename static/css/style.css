@@ -423,3 +423,54 @@ body.theme-faculty-light .challenge-box__top{ display:flex; align-items:center; 
 body.theme-faculty-light .challenge-tag{
   background:#fff; color:var(--fl-green); font-size:var(--fs-xs); font-weight:700; padding:.15rem .6rem; border-radius:20px;
 }
+/* =========================
+   SUPPORT FOOTER
+   ========================= */
+
+.footer__links {
+    display: flex;
+    align-items: flex-start;
+    gap: 35px;
+}
+
+.footer__support {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    min-width: 260px;
+}
+
+.footer__support .support-title {
+    display: block;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.footer__support .support-name {
+    display: block;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.footer__support .support-phone {
+    display: block;
+    color: #aeb6c7;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.footer__support .support-email {
+    display: block;
+    color: #aeb6c7;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.footer__support .support-phone:hover,
+.footer__support .support-email:hover {
+    color: #4f9cff;
+}

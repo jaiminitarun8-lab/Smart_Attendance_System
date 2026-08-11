@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from datetime import date as date_type, timedelta
 
 from database.connection import get_db
-from database.models import Attendance, Student
+from database.models import Attendance, Student, Notification
 
 router = APIRouter(prefix="/api/attendance", tags=["attendance"])
 
@@ -28,6 +28,24 @@ class MarkBulk(BaseModel):
     date: date_type
     records: list[MarkRecord]
     marked_by: str = "manual"   # "manual" ya "ai_face_recognition" — teammate isi field ko use karega
+
+
+def _create_attendance_notification(db: Session, user_id: str):
+    total = db.query(Attendance).filter(Attendance.user_id == user_id).count()
+    present = db.query(Attendance).filter(Attendance.user_id == user_id, Attendance.status == "present").count()
+    pct = round((present / total) * 100) if total else 0
+
+    if pct >= 75:
+        zone = "GREEN"
+    elif pct >= 51:
+        zone = "YELLOW"
+    else:
+        zone = "RED"
+
+    title = f"Attendance Update: {pct}% attendance - {zone} zone"
+    notif = Notification(user_id=user_id, user_type="student", title=title)
+    db.add(notif)
+    db.commit()
 
 
 def _upsert(db: Session, user_id: str, user_type: str, subject: str, date_val, status: str, marked_by: str = "manual"):
@@ -57,6 +75,8 @@ def _upsert(db: Session, user_id: str, user_type: str, subject: str, date_val, s
 def mark_one(data: MarkOne, db: Session = Depends(get_db)):
     _upsert(db, data.user_id, data.user_type, data.subject, data.date, data.status)
     db.commit()
+    if data.user_type == "student":
+        _create_attendance_notification(db, data.user_id)
     return {"success": True, "message": "Attendance marked."}
 
 
@@ -66,6 +86,8 @@ def mark_bulk(data: MarkBulk, db: Session = Depends(get_db)):
     for rec in data.records:
         _upsert(db, rec.student_id, "student", data.subject, data.date, rec.status, data.marked_by)
     db.commit()
+    for rec in data.records:
+        _create_attendance_notification(db, rec.student_id)
     return {"success": True, "message": f"{len(data.records)} students marked.", "count": len(data.records)}
 
 
@@ -140,9 +162,9 @@ def get_student_summary(student_id: str, db: Session = Depends(get_db)):
     absent = sum(1 for r in all_records if r.status == "absent")
     pct = round((present / total) * 100) if total else 0
 
-    if pct >= 85:
+    if pct >= 75:
         risk_level = "green"
-    elif pct >= 60:
+    elif pct >= 51:
         risk_level = "yellow"
     else:
         risk_level = "red"

@@ -1,91 +1,342 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AttendAI · Sign in</title>
-<meta name="description" content="AI-powered attendance for schools and colleges." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <title>AttendAI · Sign in</title>
 
-<link rel="stylesheet" href="/static/css/style.css" />
+  <meta
+    name="description"
+    content="AI-powered attendance for schools and colleges."
+  />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="/static/css/style.css" />
 </head>
+
 <body>
 
-<div class="ledger-bg" aria-hidden="true"></div>
+  <!-- BACKGROUND -->
+  <div class="ledger-bg" aria-hidden="true"></div>
 
-<nav class="navbar">
-  <div class="container navbar__inner">
-    <a href="/" class="brand">
-      <span class="brand__mark">A</span><span>AttendAI</span>
-    </a>
-    <div class="navbar__links">
-      <a href="/">Sign in</a>
-      <a href="#">About</a>
-    </div>
-  </div>
-</nav>
 
-<main class="auth-wrap">
-  <div class="auth-light" id="authLight">
+  <!-- NAVBAR -->
+  <nav class="navbar">
 
-    <div class="auth-toggle" role="tablist" aria-label="Choose sign-in role">
-      <button type="button" class="auth-toggle__btn is-active" id="toggleStudent" data-role-switch="student" role="tab" aria-selected="true">Student</button>
-      <button type="button" class="auth-toggle__btn" id="toggleTeacher" data-role-switch="teacher" role="tab" aria-selected="false">Faculty</button>
-    </div>
+    <div class="container navbar__inner">
 
-    <div class="auth-banner">
-      <span class="auth-banner__icon" id="roleIcon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="M6 10.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-5.5"/></svg>
-      </span>
-      <div>
-        <p class="auth-banner__title"><span data-role-label>Student</span> sign-in</p>
-        <p class="auth-banner__sub">Use your <span data-id-label-lower>student ID</span> and password</p>
-      </div>
-    </div>
+      <a href="/" class="brand">
+        <span class="brand__mark">A</span>
+        <span>AttendAI</span>
+      </a>
 
-    <h1 class="auth-light__welcome">Welcome</h1>
-    <p class="auth-light__sub">Enter your details to reach your dashboard.</p>
-
-    <div class="form-message" id="formMessage" role="status" aria-live="polite"></div>
-
-    <form id="loginForm" novalidate>
-      <div class="field-light">
-        <label for="loginId" data-id-label>Student ID</label>
-        <input type="text" id="loginId" name="loginId" placeholder="e.g. S2026-0417" autocomplete="username" list="idSuggestions" />
-        <datalist id="idSuggestions"></datalist>
-        <span class="field-error" id="loginIdError"></span>
+      <div class="navbar__links">
+        <a href="/">Sign in</a>
+        <a href="#">About</a>
       </div>
 
-      <div class="field-light">
-        <label for="loginPassword">Password</label>
-        <div class="field-input-light">
-          <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password" autocomplete="current-password" />
-          <button type="button" class="field-toggle-light" id="togglePassword" aria-pressed="false">Show</button>
+    </div>
+
+  </nav>
+
+
+  <!-- LOGIN SECTION -->
+  <main class="auth-wrap">
+
+    <div class="auth-light" id="authLight">
+
+
+      <!-- STUDENT / FACULTY TOGGLE -->
+      <div
+        class="auth-toggle"
+        role="tablist"
+        aria-label="Choose sign-in role"
+      >
+
+        <button
+          type="button"
+          class="auth-toggle__btn is-active"
+          id="toggleStudent"
+          data-role-switch="student"
+          role="tab"
+          aria-selected="true"
+        >
+          Student
+        </button>
+
+        <button
+          type="button"
+          class="auth-toggle__btn"
+          id="toggleTeacher"
+          data-role-switch="teacher"
+          role="tab"
+          aria-selected="false"
+        >
+          Faculty
+        </button>
+
+      </div>
+
+
+      <!-- LOGIN BANNER -->
+      <div class="auth-banner">
+
+        <span
+          class="auth-banner__icon"
+          id="roleIcon"
+        >
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+
+            <path d="M12 3 2 8l10 5 10-5-10-5Z" />
+
+            <path
+              d="M6 10.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-5.5"
+            />
+
+          </svg>
+
+        </span>
+
+
+        <div>
+
+          <p class="auth-banner__title">
+            <span data-role-label>Student</span> sign-in
+          </p>
+
+          <p class="auth-banner__sub">
+            Use your
+            <span data-id-label-lower>student ID</span>
+            and password
+          </p>
+
         </div>
-        <span class="field-error" id="loginPasswordError"></span>
+
       </div>
 
-      <div class="auth-row-light">
-        <label class="remember-light"><input type="checkbox" id="rememberMe" name="rememberMe" /> Remember me</label>
-        <a href="/register" class="forgot-light" id="registerLink">Register here</a>
+
+      <!-- WELCOME -->
+      <h1 class="auth-light__welcome">
+        Welcome
+      </h1>
+
+      <p class="auth-light__sub">
+        Enter your details to reach your dashboard.
+      </p>
+
+
+      <!-- FORM MESSAGE -->
+      <div
+        class="form-message"
+        id="formMessage"
+        role="status"
+        aria-live="polite"
+      ></div>
+
+
+      <!-- LOGIN FORM -->
+      <form id="loginForm" novalidate>
+
+
+        <!-- STUDENT ID -->
+        <div class="field-light">
+
+          <label
+            for="loginId"
+            data-id-label
+          >
+            Student ID
+          </label>
+
+          <input
+            type="text"
+            id="loginId"
+            name="loginId"
+            placeholder="e.g. S2026-0417"
+            autocomplete="username"
+            list="idSuggestions"
+          />
+
+          <datalist id="idSuggestions"></datalist>
+
+          <span
+            class="field-error"
+            id="loginIdError"
+          ></span>
+
+        </div>
+
+
+        <!-- PASSWORD -->
+        <div class="field-light">
+
+          <label for="loginPassword">
+            Password
+          </label>
+
+          <div class="field-input-light">
+
+            <input
+              type="password"
+              id="loginPassword"
+              name="loginPassword"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+            />
+
+            <button
+              type="button"
+              class="field-toggle-light"
+              id="togglePassword"
+              aria-pressed="false"
+            >
+              Show
+            </button>
+
+          </div>
+
+          <span
+            class="field-error"
+            id="loginPasswordError"
+          ></span>
+
+        </div>
+
+
+        <!-- REMEMBER ME / REGISTER -->
+        <div class="auth-row-light">
+
+          <label class="remember-light">
+
+            <input
+              type="checkbox"
+              id="rememberMe"
+              name="rememberMe"
+            />
+
+            Remember me
+
+          </label>
+
+
+          <a
+            href="/register"
+            class="forgot-light"
+            id="registerLink"
+          >
+            Register here
+          </a>
+
+        </div>
+
+
+        <!-- LOGIN BUTTON -->
+        <button
+          type="submit"
+          class="btn-teal"
+          id="loginSubmit"
+        >
+
+          Sign in as
+          <span data-role-label>student</span>
+
+        </button>
+
+      </form>
+
+    </div>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+
+    <div class="container footer__inner">
+
+
+      <!-- COPYRIGHT -->
+      <div class="footer__copyright">
+
+        <span>
+          &copy; 2026 AttendAI. Roll call, reimagined.
+        </span>
+
       </div>
 
-      <button type="submit" class="btn-teal" id="loginSubmit">Sign in as <span data-role-label>student</span></button>
-    </form>
 
-  </div>
-</main>
+      <!-- FOOTER LINKS -->
+      <div class="footer__links">
 
-<footer class="footer">
-  <div class="container footer__inner">
-    <span>&copy; 2026 AttendAI. Roll call, reimagined.</span>
-    <div class="footer__links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Support</a></div>
-  </div>
-</footer>
 
-<script src="/static/js/login.js"></script>
+        <!-- PRIVACY -->
+       <a href="/privacy">
+        Privacy
+        </a>
+
+
+        <!-- TERMS -->
+        <a href="/terms">
+        Terms
+        </a>
+
+
+        <!-- SUPPORT -->
+        <div class="footer__support">
+
+          <span class="support-title">
+            Support
+          </span>
+
+          <span class="support-name">
+            Manvendra Choudhary
+          </span>
+
+          <!-- MOBILE NUMBER -->
+          <a
+            href="tel:+918529149328"
+            class="support-phone"
+          >
+            +91 8529149328
+          </a>
+
+          <!-- EMAIL -->
+          <a
+            href="mailto:manvendra.choudhary@gmail.com"
+            class="support-email"
+          >
+            manvendra.choudhary@gmail.com
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+
+  <!-- LOGIN JAVASCRIPT -->
+  <script src="/static/js/login.js"></script>
+
 </body>
+
 </html>
