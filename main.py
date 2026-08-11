@@ -108,3 +108,25 @@ def register_page(request: Request):
         request=request,
         name="register.html"
     )
+# =====================================================
+# Privacy Policy Page
+# =====================================================
+
+@app.get("/privacy")
+def privacy_page(request: Request):
+
+    return templates.TemplateResponse(
+        request=request,
+        name="privacy.html"
+    )
+# =====================================================
+# Terms & Conditions Page
+# =====================================================
+
+@app.get("/terms")
+def terms_page(request: Request):
+
+    return templates.TemplateResponse(
+        request=request,
+        name="terms.html"
+    )
