@@ -358,9 +358,9 @@ async function renderAttendanceLog() {
 
     if (donutLegend) {
       donutLegend.innerHTML = `
-        <span style="color:#e05252;${risk === "red" ? "font-weight:700;" : ""}">● Red &lt;60%</span> &nbsp;
-        <span style="color:#f0c419;${risk === "yellow" ? "font-weight:700;" : ""}">● Yellow 60-84%</span> &nbsp;
-        <span style="color:#3fae5c;${risk === "green" ? "font-weight:700;" : ""}">● Green 85%+</span>
+        <span style="color:#e05252;${risk === "red" ? "font-weight:700;" : ""}">● Red &lt;50%</span> &nbsp;
+        <span style="color:#f0c419;${risk === "yellow" ? "font-weight:700;" : ""}">● Yellow 51-75%</span> &nbsp;
+        <span style="color:#3fae5c;${risk === "green" ? "font-weight:700;" : ""}">● Green 75%+</span>
       `;
     }
   }
