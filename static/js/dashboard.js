@@ -336,14 +336,19 @@ async function renderAttendanceLog() {
     const absent = data.absent_days ?? 0;
     const total = present + absent || 1;
     const presentPct = present / total;
+    const risk = data.risk_level || "green";
+
+    const riskColors = { red: "#e05252", yellow: "#f0c419", green: "#3fae5c" };
+    const presentColor = riskColors[risk] || riskColors.green;
+    const absentColor = "#4a4a52";
 
     const radius = 70;
     const circumference = 2 * Math.PI * radius;
     const presentLength = circumference * presentPct;
 
     donutSvg.innerHTML = `
-      <circle cx="90" cy="90" r="${radius}" fill="none" stroke="#e05252" stroke-width="24"></circle>
-      <circle cx="90" cy="90" r="${radius}" fill="none" stroke="#3fae5c" stroke-width="24"
+      <circle cx="90" cy="90" r="${radius}" fill="none" stroke="${absentColor}" stroke-width="24"></circle>
+      <circle cx="90" cy="90" r="${radius}" fill="none" stroke="${presentColor}" stroke-width="24"
         stroke-dasharray="${presentLength} ${circumference}"
         stroke-dashoffset="0"
         transform="rotate(-90 90 90)"></circle>
@@ -352,7 +357,11 @@ async function renderAttendanceLog() {
     `;
 
     if (donutLegend) {
-      donutLegend.innerHTML = `<span style="color:#3fae5c;">● Present ${present}</span> &nbsp; <span style="color:#e05252;">● Absent ${absent}</span>`;
+      donutLegend.innerHTML = `
+        <span style="color:#e05252;${risk === "red" ? "font-weight:700;" : ""}">● Red &lt;60%</span> &nbsp;
+        <span style="color:#f0c419;${risk === "yellow" ? "font-weight:700;" : ""}">● Yellow 60-84%</span> &nbsp;
+        <span style="color:#3fae5c;${risk === "green" ? "font-weight:700;" : ""}">● Green 85%+</span>
+      `;
     }
   }
 
