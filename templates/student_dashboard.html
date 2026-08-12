@@ -481,7 +481,7 @@
                   <tr>
                     <td style="color: var(--color-paper-dim)">Phone</td>
 
-                    <td>+91 98xxx xxx21</td>
+                    <td id="profilePhone">+91 98xxx xxx21</td>
                   </tr>
 
                   <tr>
@@ -499,6 +499,79 @@
                   </tr>
                 </tbody>
               </table>
+
+              <div
+                id="profileEditForm"
+                style="
+                  display: none;
+                  margin-top: var(--space-4);
+                  padding: var(--space-3);
+                  border: 1px solid rgba(255, 255, 255, 0.08);
+                  border-radius: 16px;
+                  background: rgba(255, 255, 255, 0.02);
+                "
+              >
+                <h3 style="margin-bottom: var(--space-3)">Edit profile</h3>
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    gap: var(--space-3);
+                  "
+                >
+                  <div class="field-light">
+                    <label for="editName">Name</label>
+                    <input type="text" id="editName" placeholder="Your name" />
+                  </div>
+                  <div class="field-light">
+                    <label for="editEmail">Email</label>
+                    <input
+                      type="email"
+                      id="editEmail"
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                  <div class="field-light">
+                    <label for="editDepartment">Department</label>
+                    <input
+                      type="text"
+                      id="editDepartment"
+                      placeholder="Grade / Section"
+                    />
+                  </div>
+                  <div class="field-light">
+                    <label for="editPhone">Phone</label>
+                    <input
+                      type="text"
+                      id="editPhone"
+                      placeholder="+91 98xxxx xxxx"
+                    />
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    gap: var(--space-2);
+                    justify-content: flex-end;
+                    margin-top: var(--space-3);
+                  "
+                >
+                  <button
+                    type="button"
+                    class="btn btn-ghost"
+                    id="cancelProfileEditBtn"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="saveProfileBtn"
+                  >
+                    Save changes
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
