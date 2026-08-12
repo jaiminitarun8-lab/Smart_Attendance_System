@@ -31,7 +31,7 @@ def seed_data():
         Student(student_id="S2026-0001", name="Aarav Sharma", password_hash=hash_password("student123"),
                 email="aarav.sharma@attendai.edu", phone="9876500001", department="Computer Science", section="B"),
         Student(student_id="S2026-0002", name="Meera Nair", password_hash=hash_password("student123"),
-                email="meera.nair@attendai.edu", phone="9876500002", department="Computer Science", section="B"),
+                email="meera.nair@attendai.edu", phone="9876500002", department="Computer Science", section="A"),
         Student(student_id="S2026-0003", name="Kabir Singh", password_hash=hash_password("student123"),
                 email="kabir.singh@attendai.edu", phone="9876500003", department="Computer Science", section="B"),
         Student(student_id="S2026-0004", name="Ishita Rao", password_hash=hash_password("student123"),
