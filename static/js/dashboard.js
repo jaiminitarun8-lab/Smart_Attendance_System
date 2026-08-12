@@ -1,6 +1,6 @@
 "use strict";
 
-const role = window.ATTENDAI_ROLE; // "student" ya "teacher" — HTML file me set hota hai
+const role = window.ATTENDAI_ROLE; // "student" ya "teacher" - HTML file me set hota hai
 const params = new URLSearchParams(window.location.search);
 const userId = params.get("id") || "";
 const userName =
@@ -68,14 +68,10 @@ async function renderTasks() {
     // =====================================================
 
     if (role === "student") {
-
-      const pending = tasks.filter(
-        (t) => !t.completed
-      ).length;
+      const pending = tasks.filter((t) => !t.completed).length;
 
       if (countLabel) {
-        countLabel.textContent =
-          `${pending} pending · ${tasks.length} total`;
+        countLabel.textContent = `${pending} pending · ${tasks.length} total`;
       }
 
       if (tasks.length === 0) {
@@ -92,9 +88,9 @@ async function renderTasks() {
         return;
       }
 
-      list.innerHTML = tasks.map((task) => {
-
-        return `
+      list.innerHTML = tasks
+        .map((task) => {
+          return `
           <div
             class="quick-action"
             style="cursor:default;margin-bottom:.7rem;"
@@ -125,13 +121,11 @@ async function renderTasks() {
 
             ${
               task.completed
-
                 ? `
                   <span class="status-pill present">
                     Completed
                   </span>
                 `
-
                 : `
                   <button
                     type="button"
@@ -149,73 +143,52 @@ async function renderTasks() {
 
           </div>
         `;
-
-      }).join("");
-
+        })
+        .join("");
 
       // Student task complete button
-      list
-        .querySelectorAll("[data-complete-task]")
-        .forEach((btn) => {
+      list.querySelectorAll("[data-complete-task]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const id = Number(btn.getAttribute("data-complete-task"));
 
-          btn.addEventListener("click", async () => {
+          const response = await fetch(`/api/tasks/${id}/complete`, {
+            method: "POST",
 
-            const id = Number(
-              btn.getAttribute("data-complete-task")
-            );
+            headers: {
+              "Content-Type": "application/json",
+            },
 
-            const response = await fetch(
-              `/api/tasks/${id}/complete`,
-              {
-                method: "POST",
-
-                headers: {
-                  "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-                  student_id: userId
-                })
-              }
-            );
-
-            const data = await response.json();
-
-            if (!data.success) {
-              alert(
-                data.message ||
-                "Assignment submit nahi hua."
-              );
-
-              return;
-            }
-
-            alert(
-              "Assignment successfully submitted."
-            );
-
-            await renderTasks();
-
+            body: JSON.stringify({
+              student_id: userId,
+            }),
           });
 
+          const data = await response.json();
+
+          if (!data.success) {
+            alert(data.message || "Assignment submit nahi hua.");
+
+            return;
+          }
+
+          alert("Assignment successfully submitted.");
+
+          await renderTasks();
         });
+      });
 
       return;
     }
-
 
     // =====================================================
     // TEACHER / FACULTY VIEW
     // =====================================================
 
     if (countLabel) {
-      countLabel.textContent =
-        `${tasks.length} tasks assigned`;
+      countLabel.textContent = `${tasks.length} tasks assigned`;
     }
 
-
     if (tasks.length === 0) {
-
       list.innerHTML = `
         <p style="
           color:var(--color-paper-dim);
@@ -229,38 +202,28 @@ async function renderTasks() {
       return;
     }
 
-
     // =====================================================
     // TEACHER TASK CARDS
     // =====================================================
 
-    list.innerHTML = tasks.map((task) => {
+    list.innerHTML = tasks
+      .map((task) => {
+        const completedStudents = task.completed_students || [];
 
-      const completedStudents =
-        task.completed_students || [];
+        const pendingStudents = task.pending_students || [];
 
-      const pendingStudents =
-        task.pending_students || [];
+        // ===================================================
+        // COMPLETED STUDENTS
+        // ===================================================
 
+        let completedHTML = "";
 
-      // ===================================================
-      // COMPLETED STUDENTS
-      // ===================================================
-
-      let completedHTML = "";
-
-      if (completedStudents.length > 0) {
-
-        completedHTML =
-          completedStudents
+        if (completedStudents.length > 0) {
+          completedHTML = completedStudents
             .map((student) => {
-
-              const submittedTime =
-                student.completed_at
-                  ? new Date(
-                      student.completed_at
-                    ).toLocaleString()
-                  : "Time not available";
+              const submittedTime = student.completed_at
+                ? new Date(student.completed_at).toLocaleString()
+                : "Time not available";
 
               return `
                 <div style="
@@ -314,13 +277,10 @@ async function renderTasks() {
 
                 </div>
               `;
-
             })
             .join("");
-
-      } else {
-
-        completedHTML = `
+        } else {
+          completedHTML = `
           <div style="
             color:var(--color-paper-dim);
             font-size:.8rem;
@@ -329,19 +289,16 @@ async function renderTasks() {
             Abhi kisi student ne submit nahi kiya.
           </div>
         `;
+        }
 
-      }
+        // ===================================================
+        // PENDING STUDENTS
+        // ===================================================
 
+        let pendingHTML = "";
 
-      // ===================================================
-      // PENDING STUDENTS
-      // ===================================================
-
-      let pendingHTML = "";
-
-      if (pendingStudents.length > 0) {
-
-        pendingHTML = `
+        if (pendingStudents.length > 0) {
+          pendingHTML = `
           <div style="
             margin-top:1rem;
           ">
@@ -357,7 +314,6 @@ async function renderTasks() {
 
             ${pendingStudents
               .map((student) => {
-
                 return `
                   <div style="
                     padding:.45rem 0;
@@ -378,21 +334,18 @@ async function renderTasks() {
 
                   </div>
                 `;
-
               })
               .join("")}
 
           </div>
         `;
+        }
 
-      }
+        // ===================================================
+        // FINAL TEACHER TASK CARD
+        // ===================================================
 
-
-      // ===================================================
-      // FINAL TEACHER TASK CARD
-      // ===================================================
-
-      return `
+        return `
         <div
           class="quick-action"
           style="
@@ -438,11 +391,7 @@ async function renderTasks() {
 
             <span class="
               status-pill
-              ${
-                completedStudents.length > 0
-                  ? "present"
-                  : "pending"
-              }
+              ${completedStudents.length > 0 ? "present" : "pending"}
             ">
               ${completedStudents.length}
               /
@@ -476,16 +425,10 @@ async function renderTasks() {
 
         </div>
       `;
-
-    }).join("");
-
-
+      })
+      .join("");
   } catch (error) {
-
-    console.error(
-      "Task loading error:",
-      error
-    );
+    console.error("Task loading error:", error);
 
     list.innerHTML = `
       <p style="
@@ -495,7 +438,6 @@ async function renderTasks() {
         Tasks load nahi ho pa rahe hain.
       </p>
     `;
-
   }
 }
 
@@ -1166,6 +1108,81 @@ function populateProfile() {
     `ID · ${userId || "—"}`;
   document.getElementById("profileEmail").textContent =
     `${userId.toLowerCase().replace(/[^a-z0-9]/g, "")}@attendai.edu`;
+  const dept = document.getElementById("profileDept");
+  if (dept) dept.textContent = "Grade 11 · Section B";
+  const phone = document.getElementById("profilePhone");
+  if (phone) phone.textContent = "+91 98xxx xxx21";
+}
+
+async function loadStudentProfile() {
+  const res = await fetch(`/api/profile/student/${encodeURIComponent(userId)}`);
+  const data = await res.json();
+  if (!data.success || !data.profile) return;
+  const profile = data.profile;
+  document.getElementById("profileName").textContent = profile.name;
+  document.getElementById("profileEmail").textContent = profile.email || "—";
+  document.getElementById("profileDept").textContent =
+    profile.department || "Grade 11 · Section B";
+  document.getElementById("profilePhone").textContent =
+    profile.phone || "+91 98xxx xxx21";
+  document.getElementById("profileAvatar").textContent = profile.name
+    .charAt(0)
+    .toUpperCase();
+  document.getElementById("profileChipAvatar").textContent = profile.name
+    .charAt(0)
+    .toUpperCase();
+  document.getElementById("profileChipName").textContent = profile.name;
+}
+
+function openProfileEdit() {
+  const form = document.getElementById("profileEditForm");
+  if (!form) return;
+
+  form.style.display = "block";
+  document.getElementById("editName").value =
+    document.getElementById("profileName").textContent || "";
+  document.getElementById("editEmail").value =
+    document.getElementById("profileEmail").textContent || "";
+  document.getElementById("editDepartment").value =
+    document.getElementById("profileDept").textContent || "";
+  document.getElementById("editPhone").value =
+    document.getElementById("profilePhone").textContent || "";
+}
+
+function closeProfileEdit() {
+  const form = document.getElementById("profileEditForm");
+  if (!form) return;
+  form.style.display = "none";
+}
+
+async function saveProfileEdit() {
+  const name = document.getElementById("editName").value.trim();
+  const email = document.getElementById("editEmail").value.trim();
+  const department = document.getElementById("editDepartment").value.trim();
+  const phone = document.getElementById("editPhone").value.trim();
+
+  if (!name || !email) {
+    alert("Name aur email dono bharna zaroori hai.");
+    return;
+  }
+
+  const res = await fetch(
+    `/api/profile/student/${encodeURIComponent(userId)}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, department, phone }),
+    },
+  );
+  const data = await res.json();
+  if (!data.success) {
+    alert(data.message || "Profile update mein dikkat hai.");
+    return;
+  }
+
+  loadStudentProfile();
+  closeProfileEdit();
+  alert("Profile updated successfully.");
 }
 
 function populateTopbar() {
@@ -1266,6 +1283,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderRoster();
   renderPendingApprovalsCount();
   initializeTimetableEditorControls();
+  loadStudentProfile();
   showPage("dashboard");
 
   document.querySelectorAll("[data-nav-link]").forEach((link) => {
@@ -1334,5 +1352,20 @@ document.addEventListener("DOMContentLoaded", () => {
       renderLeavePage();
       leaveApplyForm.reset();
     });
+  }
+
+  const editProfileBtn = document.getElementById("editProfileBtn");
+  if (editProfileBtn) {
+    editProfileBtn.addEventListener("click", openProfileEdit);
+  }
+
+  const cancelProfileEditBtn = document.getElementById("cancelProfileEditBtn");
+  if (cancelProfileEditBtn) {
+    cancelProfileEditBtn.addEventListener("click", closeProfileEdit);
+  }
+
+  const saveProfileBtn = document.getElementById("saveProfileBtn");
+  if (saveProfileBtn) {
+    saveProfileBtn.addEventListener("click", saveProfileEdit);
   }
 });

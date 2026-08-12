@@ -1,9 +1,10 @@
 from fastapi import FastAPI, Request
-from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
-from routes import (auth, student, faculty, face,tasks, marks, activities,leave, register, notifications,attendance,timetable, chatbot)
-
+from routes import (activities, attendance, auth, chatbot, face, faculty,
+                    leave, marks, notifications, profile, register, student,
+                    tasks, timetable)
 
 # =====================================================
 # FastAPI Application
@@ -61,6 +62,7 @@ app.include_router(notifications.router)
 app.include_router(attendance.router)
 
 app.include_router(timetable.router)
+app.include_router(profile.router)
 
 
 # =====================================================
