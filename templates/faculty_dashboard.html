@@ -1,955 +1,411 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AttendAI Student Dashboard</title>
-
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: Inter, Arial, sans-serif;
-        background: #07132d;
-        color: #fff;
-        min-height: 100vh;
-      }
-
-      .app {
-        display: flex;
-        min-height: 100vh;
-      }
-
-      /* SIDEBAR */
-      .sidebar {
-        width: 337px;
-        background: linear-gradient(180deg, #14264e, #101d3d);
-        padding: 30px 22px;
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      .logo {
-        width: 46px;
-        height: 46px;
-        background: #ffb51b;
-        color: #101a35;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 25px;
-        font-weight: 800;
-        margin: 0 0 48px 8px;
-      }
-
-      .nav {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-      }
-
-      .nav a {
-        height: 56px;
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        padding: 0 15px;
-        color: #d5d9e5;
-        text-decoration: none;
-        border-radius: 11px;
-        font-size: 19px;
-        transition: 0.2s;
-      }
-
-      .nav a:hover,
-      .nav a.active {
-        background: rgba(255, 175, 30, 0.14);
-        color: #ffb51b;
-      }
-
-      .nav svg {
-        width: 24px;
-        height: 24px;
-      }
-
-      .footer {
-        position: absolute;
-        bottom: 25px;
-        left: 18px;
-        color: #aab4c9;
-        line-height: 1.7;
-        font-size: 14px;
-      }
-
-      /* MAIN */
-      .main {
-        flex: 1;
-        padding: 32px 38px;
-        background:
-          radial-gradient(
-            circle at 70% 10%,
-            rgba(30, 72, 150, 0.12),
-            transparent 35%
-          ),
-          #07132d;
-        overflow: auto;
-      }
-
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-      }
-
-      .welcome h1 {
-        font-family: Georgia, serif;
-        font-size: 52px;
-        line-height: 1.1;
-        margin-bottom: 15px;
-      }
-
-      .subtitle {
-        color: #d2d6df;
-        font-size: 19px;
-      }
-
-      .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        margin-top: 42px;
-      }
-
-      .status {
-        border: 1px solid #3b4965;
-        border-radius: 30px;
-        padding: 12px 20px;
-        color: #d8dce5;
-        font-family: monospace;
-        font-size: 15px;
-      }
-
-      .notification {
-        width: 52px;
-        height: 52px;
-        border: 1px solid #34445f;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-      }
-
-      .notification span {
-        position: absolute;
-        top: -5px;
-        right: -2px;
-        background: #ed5656;
-        width: 21px;
-        height: 21px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 12px;
-      }
-
-      .profile {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        border: 1px solid #34445f;
-        border-radius: 30px;
-        padding: 8px 18px 8px 8px;
-      }
-
-      .avatar {
-        width: 42px;
-        height: 42px;
-        background: #183b77;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #5da1ff;
-        font-size: 19px;
-      }
-
-      .profile-name {
-        font-weight: 700;
-        font-size: 17px;
-      }
-
-      .profile-role {
-        color: #5798ff;
-        font-size: 13px;
-        margin-top: 3px;
-      }
-
-      /* TIMETABLE */
-      .timetable-card {
-        margin-top: 45px;
-        border: 1px solid #3b4a65;
-        border-radius: 20px;
-        padding: 25px 20px 22px;
-        background: rgba(14, 27, 52, 0.68);
-      }
-
-      .timetable-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin: 0 12px 18px;
-      }
-
-      .timetable-title {
-        font-family: Georgia, serif;
-        font-size: 25px;
-      }
-
-      .timetable-right {
-        display: flex;
-        align-items: center;
-        gap: 38px;
-      }
-
-      .days {
-        font-family: monospace;
-        color: #c6cad5;
-        font-size: 14px;
-      }
-
-      .edit-btn {
-        border: 1px solid #4188ff;
-        background: rgba(15, 47, 97, 0.4);
-        color: #55a0ff;
-        padding: 12px 20px;
-        border-radius: 9px;
-        cursor: pointer;
-        font-size: 15px;
-        font-weight: 600;
-      }
-
-      .edit-btn:hover {
-        background: #174889;
-      }
-
-      .table-wrapper {
-        overflow-x: auto;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 900px;
-      }
-
-      th {
-        text-align: left;
-        padding: 14px;
-        color: #d7d9e0;
-        font-family: monospace;
-        font-size: 14px;
-        border-bottom: 1px solid #354158;
-      }
-
-      td {
-        padding: 15px 14px;
-        border-bottom: 1px solid #2d3a53;
-        font-size: 16px;
-        font-weight: 600;
-      }
-
-      td:first-child {
-        color: #d9dce4;
-        font-weight: 400;
-        width: 160px;
-      }
-
-      .green {
-        color: #72ef56;
-      }
-      .blue {
-        color: #71aaff;
-      }
-      .purple {
-        color: #c78bff;
-      }
-      .orange {
-        color: #ff9e00;
-      }
-      .cyan {
-        color: #35e7e7;
-      }
-      .break {
-        color: #aeb4c5 !important;
-        font-weight: 400 !important;
-      }
-      .muted {
-        color: #84adf4;
-        font-weight: 400;
-      }
-
-      /* NOTE */
-      .note {
-        margin-top: 15px;
-        border: 1px solid rgba(105, 140, 194, 0.2);
-        background: rgba(24, 38, 68, 0.55);
-        border-radius: 14px;
-        padding: 14px;
-        color: #b9c1d0;
-        display: flex;
-        align-items: center;
-        gap: 13px;
-      }
-
-      .info {
-        width: 22px;
-        height: 22px;
-        background: #3f83ff;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: bold;
-      }
-
-      /* EDITOR */
-      .editor {
-        display: none;
-        margin-top: 20px;
-        padding: 22px;
-        border: 1px solid #4188ff;
-        border-radius: 16px;
-        background: #0b1935;
-      }
-
-      .editor.open {
-        display: block;
-      }
-
-      .editor h3 {
-        font-family: Georgia, serif;
-        font-size: 22px;
-        margin-bottom: 18px;
-      }
-
-      .edit-row {
-        display: grid;
-        grid-template-columns: 1.2fr repeat(5, 1fr);
-        gap: 10px;
-        margin-bottom: 12px;
-      }
-
-      .edit-row input {
-        width: 100%;
-        padding: 11px;
-        border: 1px solid #3a4b6b;
-        border-radius: 8px;
-        background: #101f3b;
-        color: white;
-        outline: none;
-      }
-
-      .edit-row input:focus {
-        border-color: #438cff;
-      }
-
-      .editor-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-top: 15px;
-      }
-
-      .save-btn,
-      .cancel-btn {
-        padding: 11px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-      }
-
-      .save-btn {
-        border: 0;
-        background: #287cff;
-        color: white;
-      }
-
-      .cancel-btn {
-        border: 1px solid #465674;
-        background: transparent;
-        color: #cbd2df;
-      }
-
-      /* RESPONSIVE */
-      @media (max-width: 1000px) {
-        .sidebar {
-          width: 230px;
-        }
-
-        .welcome h1 {
-          font-size: 40px;
-        }
-
-        .header {
-          flex-direction: column;
-        }
-
-        .header-actions {
-          margin-top: 20px;
-        }
-
-        .edit-row {
-          grid-template-columns: 1fr 1fr;
-        }
-      }
-
-      @media (max-width: 700px) {
-        .app {
-          display: block;
-        }
-
-        .sidebar {
-          width: 100%;
-          min-height: auto;
-        }
-
-        .nav {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-        }
-
-        .footer {
-          display: none;
-        }
-
-        .main {
-          padding: 25px 15px;
-        }
-
-        .welcome h1 {
-          font-size: 34px;
-        }
-
-        .header-actions {
-          flex-wrap: wrap;
-        }
-
-        .timetable-right {
-          flex-direction: column-reverse;
-          align-items: flex-end;
-          gap: 12px;
-        }
-
-        .timetable-header {
-          align-items: flex-start;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="app">
-      <!-- SIDEBAR -->
-      <aside class="sidebar">
-        <div class="logo">A</div>
-
-        <nav class="nav">
-          <a href="#">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-            >
-              <rect x="3" y="4" width="18" height="16" rx="2" />
-              <path d="M3 10h18M8 4v4M16 4v4" />
-            </svg>
-            Dashboard
-          </a>
-
-          <a href="#">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-            >
-              <circle cx="12" cy="8" r="3.5" />
-              <path d="M4 20c1.6-3.6 5-5.5 8-5.5s6.4 1.9 8 5.5" />
-            </svg>
-            Profile
-          </a>
-
-          <a href="#">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M4 19V5a1 1 0 0 1 1-1h9l6 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"
-              />
-              <path d="M14 4v5h5M8 13h8M8 16h5" />
-            </svg>
-            Reports
-          </a>
-
-          <a href="#" class="active">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-            >
-              <rect x="3" y="4" width="18" height="16" rx="2" />
-              <path d="M3 10h18M8 4v4M16 4v4" />
-            </svg>
-            Timetable
-          </a>
-
-          <a href="#">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-            >
-              <path d="M9 11l3 3L22 4" />
-              <path
-                d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
-              />
-            </svg>
-            Tasks
-          </a>
-
-          <a href="#">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-            >
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 7v5l3 3" />
-            </svg>
-            Other Activities
-          </a>
-
-          <a href="#">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-            >
-              <path d="M3 3v18h18" />
-              <path d="M7 15l4-6 4 3 5-7" />
-            </svg>
-            Marks
-          </a>
-
-          <a href="#">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-            >
-              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-            </svg>
-            Leave Management
-          </a>
-
-          <a href="#">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-            >
-              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-            </svg>
-            Notifications
-          </a>
-
-          <a href="#">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-            >
-              <circle cx="12" cy="8" r="3.5" />
-              <path d="M4 20c1.6-3.6 5-5.5 8-5.5s6.4 1.9 8 5.5" />
-            </svg>
-            AI Chatbot
-          </a>
-        </nav>
-
-        <div class="footer">
-          © 2026 Student Portal<br />
-          All rights reserved.
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AttendAI · Faculty Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body class="is-app-shell theme-faculty-light">
+
+<div class="ledger-bg" aria-hidden="true"></div>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="sidebar__brand"><span class="brand__mark">A</span></div>
+
+    <nav class="sidebar__nav">
+      <a href="#" class="sidebar__link is-active" data-nav-link data-page="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>
+        Dashboard
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="timetable">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v4M16 4v4"/></svg>
+        My Classes
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="reports">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5a1 1 0 0 1 1-1h9l6 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M14 4v5h5M8 13h8M8 16h5"/></svg>
+        Reports
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="tasks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Tasks
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="activities">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Announcements
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="marks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 15l4-6 4 3 5-7"/></svg>
+        Marks
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4 20c1.6-3.6 5-5.5 8-5.5s6.4 1.9 8 5.5"/></svg>
+        Profile
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="leave">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        Leave Management
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="challenges">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 21h8M13 3l7 4-7 4-7-4 7-4Z"/><path d="M6 9v6c0 1.5 2.7 3 6 3s6-1.5 6-3V9"/></svg>
+        Challenges
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="students">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21c0-3.3-3.6-6-8-6s-8 2.7-8 6"/><circle cx="12" cy="7" r="4"/></svg>
+        Students
+      </a>
+      <a href="#" class="sidebar__link" data-nav-link data-page="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar__foot">
+      <a href="/" class="sidebar__link" id="logoutBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Log out
+      </a>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <div>
+        <h1>Welcome, <span id="dashName">there</span> 👋</h1>
+        <p id="pageSubtitle">Here's what's happening with your classes today &middot; <span id="dashDate"></span></p>
+      </div>
+      <div class="app-topbar__right">
+        <span class="date-chip" id="statusChip">STATUS · Present today</span>
+        <span class="bell-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="bell-chip__count">3</span>
+        </span>
+        <div class="profile-chip role-teacher" id="profileChip">
+          <span class="profile-chip__avatar" id="profileChipAvatar">T</span>
+          <span class="profile-chip__text">
+            <span class="profile-chip__name"><span style="color:var(--fl-blue,#2f6bff);font-weight:800;margin-right:.35rem;">A</span><span id="profileChipName">Teacher</span></span>
+            <span class="profile-chip__role">Teacher</span>
+          </span>
         </div>
-      </aside>
-
-      <!-- MAIN -->
-      <main class="main">
-        <header class="header">
-          <div class="welcome">
-            <h1>Welcome back, Aarav Sharma</h1>
-            <div class="subtitle">Student sign-in · Wednesday, August 12</div>
-          </div>
-
-          <div class="header-actions">
-            <div class="status">STATUS · Present today</div>
-
-            <div class="notification">
-              🔔
-              <span>1</span>
-            </div>
-
-            <div class="profile">
-              <div class="avatar">A</div>
-              <div>
-                <div class="profile-name">Aarav Sharma</div>
-                <div class="profile-role">STUDENT</div>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <!-- TIMETABLE -->
-        <section class="timetable-card">
-          <div class="timetable-header">
-            <h2 class="timetable-title">Weekly timetable</h2>
-
-            <div class="timetable-right">
-              <button class="edit-btn" id="editBtn" onclick="toggleEditor()">
-                ✎ &nbsp; Edit Timetable
-              </button>
-
-              <div class="days">MON – FRI</div>
-            </div>
-          </div>
-
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>TIME</th>
-                  <th>MON</th>
-                  <th>TUE</th>
-                  <th>WED</th>
-                  <th>THU</th>
-                  <th>FRI</th>
-                </tr>
-              </thead>
-
-              <tbody id="timetableBody"></tbody>
-            </table>
-          </div>
-
-          <div class="note">
-            <span class="info">i</span>
-            <span id="updatedText">
-              Timetable last updated on August 12, 2026.
-            </span>
-          </div>
-
-          <!-- EDITOR -->
-          <div class="editor" id="editor">
-            <h3>Edit Timetable</h3>
-
-            <div id="editorRows"></div>
-
-            <div class="editor-actions">
-              <button class="cancel-btn" onclick="cancelEdit()">Cancel</button>
-
-              <button class="save-btn" onclick="saveTimetable()">
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </section>
-      </main>
+      </div>
     </div>
 
-    <script>
-      const defaultTimetable = [
-        {
-          time: "09:00 – 10:00",
-          mon: "Data Structures",
-          tue: "DBMS",
-          wed: "Operating Systems",
-          thu: "Web Development",
-          fri: "Python Programming",
-        },
-
-        {
-          time: "10:00 – 11:00",
-          mon: "DBMS",
-          tue: "Data Structures",
-          wed: "Python Programming",
-          thu: "Operating Systems",
-          fri: "DBMS",
-        },
-
-        {
-          time: "11:00 – 12:00",
-          mon: "Operating Systems",
-          tue: "Web Development",
-          wed: "DBMS Lab",
-          thu: "Data Structures",
-          fri: "Operating Systems",
-        },
-
-        {
-          time: "12:00 – 01:00",
-          mon: "Python Programming",
-          tue: "Operating Systems",
-          wed: "Data Structures",
-          thu: "DBMS",
-          fri: "Web Development",
-        },
-
-        {
-          time: "01:00 – 02:00",
-          mon: "LUNCH BREAK",
-          tue: "LUNCH BREAK",
-          wed: "LUNCH BREAK",
-          thu: "LUNCH BREAK",
-          fri: "LUNCH BREAK",
-        },
-
-        {
-          time: "02:00 – 03:00",
-          mon: "Web Development",
-          tue: "Python Lab",
-          wed: "Web Development",
-          thu: "Python Programming",
-          fri: "DBMS Lab",
-        },
-
-        {
-          time: "03:00 – 04:00",
-          mon: "Mentoring / Library",
-          tue: "Mentoring / Library",
-          wed: "Mentoring / Library",
-          thu: "Mentoring / Library",
-          fri: "Mentoring / Library",
-        },
-      ];
-
-      let timetable =
-        JSON.parse(localStorage.getItem("attendai_timetable")) ||
-        defaultTimetable;
-
-      function getClass(subject) {
-        if (subject === "LUNCH BREAK") return "break";
-
-        if (subject.includes("Data Structures")) return "green";
-
-        if (subject === "DBMS") return "blue";
-
-        if (subject.includes("Operating Systems")) return "purple";
-
-        if (subject.includes("Web Development")) return "orange";
-
-        if (subject.includes("Lab")) return "cyan";
-
-        if (subject.includes("Python")) return "green";
-
-        return "muted";
-      }
-
-      function escapeHTML(value) {
-        return String(value)
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
-      function renderTimetable() {
-        const body = document.getElementById("timetableBody");
-
-        body.innerHTML = "";
-
-        timetable.forEach((row) => {
-          const tr = document.createElement("tr");
-
-          tr.innerHTML = `
-      <td>${escapeHTML(row.time)}</td>
-
-      <td class="${getClass(row.mon)}">
-        ${escapeHTML(row.mon)}
-      </td>
-
-      <td class="${getClass(row.tue)}">
-        ${escapeHTML(row.tue)}
-      </td>
-
-      <td class="${getClass(row.wed)}">
-        ${escapeHTML(row.wed)}
-      </td>
-
-      <td class="${getClass(row.thu)}">
-        ${escapeHTML(row.thu)}
-      </td>
-
-      <td class="${getClass(row.fri)}">
-        ${escapeHTML(row.fri)}
-      </td>
-    `;
-
-          body.appendChild(tr);
-        });
-      }
-
-      function toggleEditor() {
-        const editor = document.getElementById("editor");
-
-        const button = document.getElementById("editBtn");
-
-        if (editor.classList.contains("open")) {
-          editor.classList.remove("open");
-
-          button.innerHTML = "✎ &nbsp; Edit Timetable";
-
-          return;
-        }
-
-        createEditor();
-
-        editor.classList.add("open");
-
-        button.innerHTML = "✕ &nbsp; Close Editor";
-      }
-
-      function createEditor() {
-        const container = document.getElementById("editorRows");
-
-        container.innerHTML = "";
-
-        timetable.forEach((row, index) => {
-          const div = document.createElement("div");
-
-          div.className = "edit-row";
-
-          div.innerHTML = `
-
-      <input
-        type="text"
-        data-row="${index}"
-        data-field="time"
-        value="${escapeHTML(row.time)}"
-        placeholder="Time">
-
-      <input
-        type="text"
-        data-row="${index}"
-        data-field="mon"
-        value="${escapeHTML(row.mon)}"
-        placeholder="Monday">
-
-      <input
-        type="text"
-        data-row="${index}"
-        data-field="tue"
-        value="${escapeHTML(row.tue)}"
-        placeholder="Tuesday">
-
-      <input
-        type="text"
-        data-row="${index}"
-        data-field="wed"
-        value="${escapeHTML(row.wed)}"
-        placeholder="Wednesday">
-
-      <input
-        type="text"
-        data-row="${index}"
-        data-field="thu"
-        value="${escapeHTML(row.thu)}"
-        placeholder="Thursday">
-
-      <input
-        type="text"
-        data-row="${index}"
-        data-field="fri"
-        value="${escapeHTML(row.fri)}"
-        placeholder="Friday">
-
-    `;
-
-          container.appendChild(div);
-        });
-      }
-
-      function saveTimetable() {
-        const inputs = document.querySelectorAll("#editorRows input");
-
-        inputs.forEach((input) => {
-          const row = Number(input.dataset.row);
-
-          const field = input.dataset.field;
-
-          timetable[row][field] = input.value.trim();
-        });
-
-        localStorage.setItem("attendai_timetable", JSON.stringify(timetable));
-
-        const now = new Date();
-
-        const date = now.toLocaleDateString("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        });
-
-        localStorage.setItem("attendai_timetable_date", date);
-
-        document.getElementById("updatedText").textContent =
-          "Timetable last updated on " + date + ".";
-
-        renderTimetable();
-
-        document.getElementById("editor").classList.remove("open");
-
-        document.getElementById("editBtn").innerHTML =
-          "✎ &nbsp; Edit Timetable";
-
-        alert("Timetable updated successfully.");
-      }
-
-      function cancelEdit() {
-        document.getElementById("editor").classList.remove("open");
-
-        document.getElementById("editBtn").innerHTML =
-          "✎ &nbsp; Edit Timetable";
-      }
-
-      function loadUpdatedDate() {
-        const savedDate = localStorage.getItem("attendai_timetable_date");
-
-        if (savedDate) {
-          document.getElementById("updatedText").textContent =
-            "Timetable last updated on " + savedDate + ".";
-        }
-      }
-
-      renderTimetable();
-      loadUpdatedDate();
-    </script>
-  </body>
+    <!-- ================= PAGE: Dashboard ================= -->
+    <div data-page="dashboard" class="is-page-active">
+
+      <div class="stat-grid">
+        <div class="stat-card stat-card--blue">
+          <span class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v4M16 4v4"/></svg></span>
+          <div class="stat-card__label">Classes today</div>
+          <div class="stat-card__value">4</div>
+          <a href="#" class="stat-card__link" data-nav-link data-page="timetable">View all classes →</a>
+        </div>
+        <div class="stat-card stat-card--green">
+          <span class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <div class="stat-card__label">Students present</div>
+          <div class="stat-card__value" id="facStudentsPresentValue">—</div>
+          <span class="stat-card__link" id="facStudentsPresentDelta">out of — enrolled</span>
+        </div>
+        <div class="stat-card stat-card--orange">
+          <span class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg></span>
+          <div class="stat-card__label">Today's attendance</div>
+          <div class="stat-card__value" id="facTodayAttendanceValue">—</div>
+          <a href="#" class="stat-card__link" data-nav-link data-page="reports">View report →</a>
+        </div>
+        <div class="stat-card stat-card--purple">
+          <span class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4 20c1.6-3.6 5-5.5 8-5.5s6.4 1.9 8 5.5"/></svg></span>
+          <div class="stat-card__label">Pending approvals</div>
+          <div class="stat-card__value" id="facPendingApprovalsValue">—</div>
+          <a href="#" class="stat-card__link" data-nav-link data-page="leave">Leave requests</a>
+        </div>
+      </div>
+
+      <div class="panel-grid">
+        <div class="panel">
+          <div class="panel__head"><h2>Today's attendance overview</h2></div>
+          <div style="display:flex; align-items:center; gap:var(--space-5);">
+            <div class="donut" id="donutChart" style="--present:87;--absent:10;--late:3;">
+              <div class="donut__label"><span class="donut__pct" id="donutPct">87%</span><span class="donut__sub">Present</span></div>
+            </div>
+            <div class="donut-legend" style="flex:1;">
+              <div class="donut-legend__row"><span class="donut-legend__dot" style="background:var(--fl-green);"></span>Present <span id="donutPresentCount">112 (87%)</span></div>
+              <div class="donut-legend__row"><span class="donut-legend__dot" style="background:var(--fl-red);"></span>Absent <span id="donutAbsentCount">13 (10%)</span></div>
+              <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#cbd5e1;"></span>Late <span id="donutLateCount">3 (3%)</span></div>
+            </div>
+          </div>
+          <!-- kept for dashboard.js compatibility — hidden, still populated -->
+          <div class="bar-chart" id="barChart" style="display:none;"></div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Recent activity</h2><span>Live</span></div>
+          <div class="activity-list" id="activityList"></div>
+        </div>
+      </div>
+
+      <div class="panel-grid">
+        <div class="table-panel">
+          <div class="panel__head">
+            <h2>Section B · Today's roster</h2>
+            <span id="rosterCountLabel">— students</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:var(--space-3);">
+            <label style="font-size:var(--fs-xs);color:var(--fl-text-dim);">Subject:</label>
+            <input type="text" id="rosterSubject" value="General" style="padding:.4rem .7rem;border:1px solid var(--fl-border);border-radius:8px;font-size:var(--fs-sm);max-width:160px;" />
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Student</th><th>Roll no.</th><th>Status</th><th></th></tr></thead>
+            <tbody id="rosterTableBody">
+              <tr><td colspan="4" style="color:var(--fl-text-dim);">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Quick actions</h2></div>
+          <div class="quick-actions" style="grid-template-columns:1fr 1fr;">
+            <a href="#" class="quick-action-tile quick-action-tile--blue" data-nav-link data-page="dashboard">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>
+              Mark Attendance
+            </a>
+            <a href="#" class="quick-action-tile quick-action-tile--purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 21h8M13 3l7 4-7 4-7-4 7-4Z"/></svg>
+              Create Challenge
+            </a>
+            <a href="#" class="quick-action-tile quick-action-tile--green" data-nav-link data-page="reports">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5a1 1 0 0 1 1-1h9l6 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/></svg>
+              Generate Report
+            </a>
+            <a href="#" class="quick-action-tile quick-action-tile--orange" data-nav-link data-page="activities">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l18-7-7 18-2-8-9-3Z"/></svg>
+              Send Announcement
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Dashboard ================= -->
+
+    <!-- ================= PAGE: Profile ================= -->
+    <div data-page="profile">
+      <div class="panel-grid" style="grid-template-columns:0.7fr 1.3fr;">
+        <div class="panel" style="text-align:center;">
+          <div style="width:84px;height:84px;border-radius:50%;background:var(--fl-blue-soft);color:var(--fl-blue);display:flex;align-items:center;justify-content:center;margin:0 auto var(--space-3);font-family:var(--font-display);font-size:1.7rem;font-weight:600;" id="profileAvatar">T</div>
+          <h2 style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:600;" id="profileName">Faculty Name</h2>
+          <p style="color:var(--fl-text-dim);font-size:var(--fs-sm);margin-top:.25rem;" id="profileIdLine">ID · —</p>
+          <div class="date-chip" style="margin-top:var(--space-3);display:inline-flex;">ROLE · Faculty</div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Details</h2><span>On file</span></div>
+          <table class="data-table">
+            <tbody>
+              <tr><td style="color:var(--fl-text-dim);">Department</td><td id="profileDept">Computer Science Department</td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Email</td><td id="profileEmail">—</td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Phone</td><td>+91 98xxx xxx21</td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Joined</td><td>August 2023</td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Status</td><td><span class="status-pill present">Active</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Profile ================= -->
+
+    <!-- ================= PAGE: Reports ================= -->
+    <div data-page="reports">
+    <div class="stat-grid">
+        <div class="stat-card stat-card--green"><div class="stat-card__label">This term</div><div class="stat-card__value" id="reportTermPct">—</div><span class="stat-card__link">Attendance rate</span></div>
+        <div class="stat-card stat-card--blue"><div class="stat-card__label">Present days</div><div class="stat-card__value" id="reportPresentDays">—</div><span class="stat-card__link">Total present</span></div>
+        <div class="stat-card stat-card--orange"><div class="stat-card__label">Absent days</div><div class="stat-card__value" id="reportAbsentDays">—</div><span class="stat-card__link">Total absent</span></div>
+        <div class="stat-card stat-card--purple"><div class="stat-card__label">Best month</div><div class="stat-card__value" id="reportBestWeek">—</div><span class="stat-card__link">Highest rate</span></div>
+      </div>
+      <div class="table-panel">
+        <div class="panel__head">
+          <h2>Monthly breakdown</h2>
+          <button type="button" class="btn btn-ghost" id="downloadReportBtn" style="padding:.4rem .9rem;font-size:var(--fs-xs);">Download CSV</button>
+        </div>
+       <table class="data-table" id="reportTable">
+          <thead><tr><th>Month</th><th>Present</th><th>Absent</th><th>Rate</th></tr></thead>
+          <tbody id="reportTableBody">
+            <tr><td>March</td><td>21</td><td>1</td><td><span class="status-pill present">95%</span></td></tr>
+            <tr><td>April</td><td>19</td><td>3</td><td><span class="status-pill present">86%</span></td></tr>
+            <tr><td>May</td><td>18</td><td>4</td><td><span class="status-pill pending">82%</span></td></tr>
+            <tr><td>June</td><td>20</td><td>2</td><td><span class="status-pill present">91%</span></td></tr>
+            <tr><td>July</td><td>18</td><td>2</td><td><span class="status-pill present">90%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Reports ================= -->
+
+    <!-- ================= PAGE: Timetable ================= -->
+    <div data-page="timetable">
+      <div class="table-panel">
+        <div class="panel__head"><h2>Weekly timetable</h2><span>Mon – Fri</span></div>
+        <table class="data-table">
+          <thead><tr><th>Time</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th></tr></thead>
+          <tbody id="timetableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Timetable ================= -->
+
+    <!-- ================= PAGE: Tasks ================= -->
+    <div data-page="tasks">
+      <div class="table-panel" style="margin-bottom:var(--space-3);">
+        <div class="panel__head"><h2>Assign a new task</h2><span>Section B</span></div>
+        <form id="assignTaskForm" style="display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:var(--space-3);align-items:end;">
+          <div class="field-light" style="margin-bottom:0;">
+            <label for="taskTitle" style="color:var(--fl-text-dim);">Task title</label>
+            <input type="text" id="taskTitle" placeholder="e.g. Submit lab report" required />
+          </div>
+          <div class="field-light" style="margin-bottom:0;">
+            <label for="taskSubject" style="color:var(--fl-text-dim);">Subject</label>
+            <input type="text" id="taskSubject" placeholder="Mathematics" required />
+          </div>
+          <div class="field-light" style="margin-bottom:0;">
+            <label for="taskDueDate" style="color:var(--fl-text-dim);">Due date</label>
+            <input type="date" id="taskDueDate" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="height:44px;">Assign</button>
+        </form>
+      </div>
+      <div class="table-panel">
+        <div class="panel__head"><h2>Assigned tasks</h2><span id="taskCountLabel">—</span></div>
+        <div id="taskList"></div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Tasks ================= -->
+
+    <!-- ================= PAGE: Activities ================= -->
+    <div data-page="activities">
+      <div class="panel-grid">
+        <div class="panel">
+          <div class="panel__head"><h2>Announcements & Events</h2><span>Latest</span></div>
+          <div class="activity-list" id="announcementsList"></div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Extra-curricular</h2><span>Clubs & sports</span></div>
+          <div class="activity-list" id="extracurricularList"></div>
+        </div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Activities ================= -->
+
+    <!-- ================= PAGE: Marks ================= -->
+    <div data-page="marks">
+      <div class="table-panel">
+        <div class="panel__head"><h2>Section B · Marks management</h2><span>Mathematics</span></div>
+        <table class="data-table" id="marksTable">
+          <thead><tr><th>Student</th><th>Marks obtained</th><th>Max marks</th><th>Percentage</th><th>Grade</th></tr></thead>
+          <tbody id="marksTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Marks ================= -->
+
+    <!-- ================= PAGE: Leave Management ================= -->
+    <div data-page="leave">
+      <div class="stat-grid">
+        <div class="stat-card stat-card--orange"><div class="stat-card__label">Pending</div><div class="stat-card__value" id="facLeavePendingCount">—</div><span class="stat-card__link">Needs your review</span></div>
+        <div class="stat-card stat-card--green"><div class="stat-card__label">Approved</div><div class="stat-card__value" id="facLeaveApprovedCount">—</div><span class="stat-card__link">This term</span></div>
+        <div class="stat-card stat-card--purple"><div class="stat-card__label">Rejected</div><div class="stat-card__value" id="facLeaveRejectedCount">—</div><span class="stat-card__link">This term</span></div>
+        <div class="stat-card stat-card--blue"><div class="stat-card__label">Total requests</div><div class="stat-card__value" id="facLeaveTotalCount">—</div><span class="stat-card__link">Section B</span></div>
+      </div>
+      <div class="table-panel">
+        <div class="panel__head"><h2>Leave requests</h2><span>Section B</span></div>
+        <table class="data-table">
+          <thead><tr><th>Student</th><th>Class / Section / Branch</th><th>Reason</th><th>From</th><th>To</th><th>Status</th><th></th></tr></thead>
+          <tbody id="leaveRequestsBody">
+            <tr><td colspan="7" style="color:var(--fl-text-dim);">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Leave Management ================= -->
+
+    <!-- ================= PAGE: Challenges ================= -->
+    <div data-page="challenges">
+      <div class="panel-grid" style="grid-template-columns:1fr;">
+        <div class="panel">
+          <div class="panel__head"><h2>Create a challenge</h2><span>Live pop quiz for attendance</span></div>
+          <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:var(--space-3);align-items:end;">
+            <div class="field-light" style="margin-bottom:0;">
+              <label style="color:var(--fl-text-dim);">Challenge title</label>
+              <input type="text" placeholder="e.g. Blink Twice" />
+            </div>
+            <div class="field-light" style="margin-bottom:0;">
+              <label style="color:var(--fl-text-dim);">Class</label>
+              <input type="text" placeholder="BCA 2nd Year - A" />
+            </div>
+            <div class="field-light" style="margin-bottom:0;">
+              <label style="color:var(--fl-text-dim);">Duration (sec)</label>
+              <input type="number" placeholder="60" />
+            </div>
+            <button type="button" class="btn btn-primary" style="height:44px;">Launch</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel__head"><h2>Live challenge status</h2><span class="status-pill present" style="margin:0;">Active</span></div>
+        <div class="challenge-box">
+          <div class="challenge-box__top">
+            <div><strong>Challenge:</strong> Blink Twice &nbsp;·&nbsp; <span style="color:var(--fl-text-dim);">Section B</span></div>
+            <span class="challenge-tag">00:45 left</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" style="width:93%;"></div></div>
+          <div style="margin-top:.4rem;font-size:var(--fs-xs);color:var(--fl-text-dim);">28 / 30 responses</div>
+        </div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Challenges ================= -->
+
+    <!-- ================= PAGE: Students ================= -->
+    <div data-page="students">
+      <div class="table-panel">
+        <div class="panel__head"><h2>Section B · Students</h2><span>28 students</span></div>
+        <table class="data-table">
+          <thead><tr><th>Student</th><th>Roll no.</th><th>Attendance</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Aarav Sharma</td><td>STU-8801</td><td>92%</td><td><span class="status-pill present">Active</span></td></tr>
+            <tr><td>Meera Nair</td><td>STU-8802</td><td>88%</td><td><span class="status-pill present">Active</span></td></tr>
+            <tr><td>Kabir Singh</td><td>STU-8803</td><td>74%</td><td><span class="status-pill pending">At risk</span></td></tr>
+            <tr><td>Ishita Rao</td><td>STU-8804</td><td>95%</td><td><span class="status-pill present">Active</span></td></tr>
+            <tr><td>Devansh Patel</td><td>STU-8805</td><td>81%</td><td><span class="status-pill present">Active</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Students ================= -->
+
+    <!-- ================= PAGE: Settings ================= -->
+    <div data-page="settings">
+      <div class="panel-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="panel">
+          <div class="panel__head"><h2>Account settings</h2></div>
+          <div class="field-light"><label style="color:var(--fl-text-dim);">Display name</label><input type="text" value="Dr. Ramesh Verma" /></div>
+          <div class="field-light"><label style="color:var(--fl-text-dim);">Email</label><input type="email" value="ramesh.verma@attendai.edu" /></div>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Notifications</h2></div>
+          <div class="quick-action"><span>Email me on new leave requests</span><input type="checkbox" checked /></div>
+          <div class="quick-action"><span>Email me daily attendance summary</span><input type="checkbox" checked /></div>
+          <div class="quick-action"><span>Notify on low attendance (below 75%)</span><input type="checkbox" /></div>
+        </div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Settings ================= -->
+
+  </main>
+</div>
+
+<script>window.ATTENDAI_ROLE = "teacher";</script>
+<script src="/static/js/dashboard.js"></script>
+</body>
 </html>
