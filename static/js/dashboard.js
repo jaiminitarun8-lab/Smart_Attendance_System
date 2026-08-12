@@ -57,54 +57,445 @@ async function completeTask(taskId) {
 async function renderTasks() {
   const list = document.getElementById("taskList");
   const countLabel = document.getElementById("taskCountLabel");
+
   if (!list) return;
 
-  const tasks = await fetchTasks();
+  try {
+    const tasks = await fetchTasks();
 
-  if (role === "student") {
-    const pending = tasks.filter((t) => !t.completed).length;
-    if (countLabel)
-      countLabel.textContent = `${pending} pending · ${tasks.length} total`;
-  } else {
-    const totalCompletions = tasks.reduce((s, t) => s + t.completed_count, 0);
-    if (countLabel) countLabel.textContent = `${tasks.length} tasks assigned`;
-  }
+    // =====================================================
+    // STUDENT VIEW
+    // =====================================================
 
-  if (tasks.length === 0) {
-    list.innerHTML = `<p style="color:var(--color-paper-dim);font-size:var(--fs-sm);padding:var(--space-3) 0;">Koi task assign nahi hua abhi.</p>`;
-    return;
-  }
+    if (role === "student") {
 
-  list.innerHTML = tasks
-    .map(
-      (task) => `
-    <div class="quick-action" style="cursor:default;">
-      <div>
-        <div style="font-weight:600;${task.completed ? "text-decoration:line-through;color:var(--color-paper-dim);" : ""}">${task.title}</div>
-        <div style="font-family:var(--font-mono);font-size:.7rem;color:var(--color-paper-dim);margin-top:.25rem;">${task.subject || ""} · Due ${task.due_date || "—"}</div>
-      </div>
-      ${
-        role === "student"
-          ? task.completed
-            ? `<span class="status-pill present">Completed</span>`
-            : `<div style="display:flex;align-items:center;gap:.5rem;">
-                 <input type="file" style="font-size:.7rem;color:var(--color-paper-dim);max-width:140px;" />
-                 <button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:var(--fs-xs);" data-complete-task="${task.id}">Mark complete</button>
-               </div>`
-          : `<span class="status-pill ${task.completed_count > 0 ? "present" : "pending"}">${task.completed_count} completed</span>`
+      const pending = tasks.filter(
+        (t) => !t.completed
+      ).length;
+
+      if (countLabel) {
+        countLabel.textContent =
+          `${pending} pending · ${tasks.length} total`;
       }
-    </div>`,
-    )
-    .join("");
 
-  if (role === "student") {
-    list.querySelectorAll("[data-complete-task]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const id = Number(btn.getAttribute("data-complete-task"));
-        await completeTask(id);
-        renderTasks();
-      });
-    });
+      if (tasks.length === 0) {
+        list.innerHTML = `
+          <p style="
+            color:var(--color-paper-dim);
+            font-size:var(--fs-sm);
+            padding:var(--space-3) 0;
+          ">
+            Koi task assign nahi hua abhi.
+          </p>
+        `;
+
+        return;
+      }
+
+      list.innerHTML = tasks.map((task) => {
+
+        return `
+          <div
+            class="quick-action"
+            style="cursor:default;margin-bottom:.7rem;"
+          >
+
+            <div>
+              <div style="
+                font-weight:600;
+                ${
+                  task.completed
+                    ? "text-decoration:line-through;color:var(--color-paper-dim);"
+                    : ""
+                }
+              ">
+                ${task.title}
+              </div>
+
+              <div style="
+                font-family:var(--font-mono);
+                font-size:.7rem;
+                color:var(--color-paper-dim);
+                margin-top:.25rem;
+              ">
+                ${task.subject || ""}
+                · Due ${task.due_date || "—"}
+              </div>
+            </div>
+
+            ${
+              task.completed
+
+                ? `
+                  <span class="status-pill present">
+                    Completed
+                  </span>
+                `
+
+                : `
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    style="
+                      padding:.4rem .9rem;
+                      font-size:var(--fs-xs);
+                    "
+                    data-complete-task="${task.id}"
+                  >
+                    Mark complete
+                  </button>
+                `
+            }
+
+          </div>
+        `;
+
+      }).join("");
+
+
+      // Student task complete button
+      list
+        .querySelectorAll("[data-complete-task]")
+        .forEach((btn) => {
+
+          btn.addEventListener("click", async () => {
+
+            const id = Number(
+              btn.getAttribute("data-complete-task")
+            );
+
+            const response = await fetch(
+              `/api/tasks/${id}/complete`,
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                  student_id: userId
+                })
+              }
+            );
+
+            const data = await response.json();
+
+            if (!data.success) {
+              alert(
+                data.message ||
+                "Assignment submit nahi hua."
+              );
+
+              return;
+            }
+
+            alert(
+              "Assignment successfully submitted."
+            );
+
+            await renderTasks();
+
+          });
+
+        });
+
+      return;
+    }
+
+
+    // =====================================================
+    // TEACHER / FACULTY VIEW
+    // =====================================================
+
+    if (countLabel) {
+      countLabel.textContent =
+        `${tasks.length} tasks assigned`;
+    }
+
+
+    if (tasks.length === 0) {
+
+      list.innerHTML = `
+        <p style="
+          color:var(--color-paper-dim);
+          font-size:var(--fs-sm);
+          padding:var(--space-3) 0;
+        ">
+          Koi task assign nahi hua abhi.
+        </p>
+      `;
+
+      return;
+    }
+
+
+    // =====================================================
+    // TEACHER TASK CARDS
+    // =====================================================
+
+    list.innerHTML = tasks.map((task) => {
+
+      const completedStudents =
+        task.completed_students || [];
+
+      const pendingStudents =
+        task.pending_students || [];
+
+
+      // ===================================================
+      // COMPLETED STUDENTS
+      // ===================================================
+
+      let completedHTML = "";
+
+      if (completedStudents.length > 0) {
+
+        completedHTML =
+          completedStudents
+            .map((student) => {
+
+              const submittedTime =
+                student.completed_at
+                  ? new Date(
+                      student.completed_at
+                    ).toLocaleString()
+                  : "Time not available";
+
+              return `
+                <div style="
+                  padding:.7rem;
+                  margin-top:.5rem;
+                  border-radius:8px;
+                  background:rgba(34,197,94,.08);
+                  border:1px solid rgba(34,197,94,.20);
+                ">
+
+                  <div style="
+                    font-weight:600;
+                  ">
+                    ✓ ${student.name || "Unknown Student"}
+                  </div>
+
+                  <div style="
+                    font-family:var(--font-mono);
+                    font-size:.7rem;
+                    color:var(--color-paper-dim);
+                    margin-top:.25rem;
+                  ">
+                    Student ID:
+                    ${student.student_id}
+                  </div>
+
+                  ${
+                    student.roll_no
+                      ? `
+                        <div style="
+                          font-family:var(--font-mono);
+                          font-size:.7rem;
+                          color:var(--color-paper-dim);
+                          margin-top:.15rem;
+                        ">
+                          Roll No:
+                          ${student.roll_no}
+                        </div>
+                      `
+                      : ""
+                  }
+
+                  <div style="
+                    font-size:.7rem;
+                    color:var(--color-paper-dim);
+                    margin-top:.25rem;
+                  ">
+                    Submitted:
+                    ${submittedTime}
+                  </div>
+
+                </div>
+              `;
+
+            })
+            .join("");
+
+      } else {
+
+        completedHTML = `
+          <div style="
+            color:var(--color-paper-dim);
+            font-size:.8rem;
+            padding:.5rem 0;
+          ">
+            Abhi kisi student ne submit nahi kiya.
+          </div>
+        `;
+
+      }
+
+
+      // ===================================================
+      // PENDING STUDENTS
+      // ===================================================
+
+      let pendingHTML = "";
+
+      if (pendingStudents.length > 0) {
+
+        pendingHTML = `
+          <div style="
+            margin-top:1rem;
+          ">
+
+            <div style="
+              font-size:.75rem;
+              font-weight:600;
+              margin-bottom:.4rem;
+            ">
+              Pending Students
+              (${pendingStudents.length})
+            </div>
+
+            ${pendingStudents
+              .map((student) => {
+
+                return `
+                  <div style="
+                    padding:.45rem 0;
+                    border-bottom:1px solid rgba(255,255,255,.05);
+                    font-size:.8rem;
+                  ">
+
+                    ○
+                    ${student.name || "Unknown Student"}
+
+                    <span style="
+                      color:var(--color-paper-dim);
+                      font-family:var(--font-mono);
+                      font-size:.68rem;
+                    ">
+                      (${student.student_id})
+                    </span>
+
+                  </div>
+                `;
+
+              })
+              .join("")}
+
+          </div>
+        `;
+
+      }
+
+
+      // ===================================================
+      // FINAL TEACHER TASK CARD
+      // ===================================================
+
+      return `
+        <div
+          class="quick-action"
+          style="
+            cursor:default;
+            display:block;
+            margin-bottom:.8rem;
+          "
+        >
+
+          <!-- Task Header -->
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:1rem;
+          ">
+
+            <div>
+
+              <div style="
+                font-weight:600;
+                font-size:1rem;
+              ">
+                ${task.title}
+              </div>
+
+              <div style="
+                font-family:var(--font-mono);
+                font-size:.7rem;
+                color:var(--color-paper-dim);
+                margin-top:.25rem;
+              ">
+                ${task.subject || ""}
+                · Due ${task.due_date || "—"}
+                · Section ${task.section || "—"}
+              </div>
+
+            </div>
+
+
+            <!-- Completed Count -->
+
+            <span class="
+              status-pill
+              ${
+                completedStudents.length > 0
+                  ? "present"
+                  : "pending"
+              }
+            ">
+              ${completedStudents.length}
+              /
+              ${task.total_count || 0}
+              completed
+            </span>
+
+          </div>
+
+
+          <!-- Students -->
+
+          <div style="
+            margin-top:1rem;
+          ">
+
+            <div style="
+              font-size:.8rem;
+              font-weight:600;
+              margin-bottom:.4rem;
+            ">
+              Completed Students
+              (${completedStudents.length})
+            </div>
+
+            ${completedHTML}
+
+            ${pendingHTML}
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+
+  } catch (error) {
+
+    console.error(
+      "Task loading error:",
+      error
+    );
+
+    list.innerHTML = `
+      <p style="
+        color:#e15554;
+        padding:1rem 0;
+      ">
+        Tasks load nahi ho pa rahe hain.
+      </p>
+    `;
+
   }
 }
 
