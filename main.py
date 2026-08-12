@@ -2,21 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from routes import (
-    auth,
-    student,
-    faculty,
-    face,
-    tasks,
-    marks,
-    activities,
-    leave,
-    register,
-    notifications,
-    attendance,
-    timetable,
-    chatbot
-)
+from routes import (auth, student, faculty, face,tasks, marks, activities,leave, register, notifications,attendance,timetable, chatbot)
 
 
 # =====================================================
