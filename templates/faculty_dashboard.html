@@ -41,6 +41,7 @@
           <td>Python Programming</td>
         </tr>
 
+<<<<<<< ours
         <tr>
           <td>10:00 - 11:00</td>
           <td>DBMS</td>
@@ -86,7 +87,6 @@
           <td>DBMS Lab</td>
         </tr>
 
-<<<<<<< HEAD
         <tr>
           <td>03:00 - 04:00</td>
           <td>Mentoring / Library</td>
@@ -98,7 +98,155 @@
       </tbody>
     </table>
   </div>
+</div>
+
+<!-- ================= ONLY CLASS EDIT MODAL ================= -->
+
+<div
+  id="facultyClassModal"
+  style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.45);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  "
+>
+  <div
+    style="
+      width: 900px;
+      max-width: 100%;
+      max-height: 90vh;
+      overflow: auto;
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    "
+  >
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      "
+    >
+      <div>
+        <h2 style="margin: 0">Edit Classes</h2>
+        <p style="margin: 5px 0 0; color: #64748b">
+          Add or edit weekly classes
+        </p>
 =======
+      <div class="panel-grid">
+        <div class="table-panel">
+          <div class="panel__head">
+            <h2>Section B · Today's roster</h2>
+            <span id="rosterCountLabel">— students</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:var(--space-3);">
+            <label style="font-size:var(--fs-xs);color:var(--fl-text-dim);">Subject:</label>
+            <input type="text" id="rosterSubject" value="General" style="padding:.4rem .7rem;border:1px solid var(--fl-border);border-radius:8px;font-size:var(--fs-sm);max-width:160px;" />
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Student</th><th>Roll no.</th><th>Status</th><th></th></tr></thead>
+            <tbody id="rosterTableBody">
+              <tr><td colspan="4" style="color:var(--fl-text-dim);">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Quick actions</h2></div>
+          <div class="quick-actions" style="grid-template-columns:1fr 1fr;">
+            <a href="#" class="quick-action-tile quick-action-tile--blue" data-nav-link data-page="dashboard">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>
+              Mark Attendance
+            </a>
+            <a href="#" class="quick-action-tile quick-action-tile--purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 21h8M13 3l7 4-7 4-7-4 7-4Z"/></svg>
+              Create Challenge
+            </a>
+            <a href="#" class="quick-action-tile quick-action-tile--green" data-nav-link data-page="reports">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5a1 1 0 0 1 1-1h9l6 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/></svg>
+              Generate Report
+            </a>
+            <a href="#" class="quick-action-tile quick-action-tile--orange" data-nav-link data-page="activities">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l18-7-7 18-2-8-9-3Z"/></svg>
+              Send Announcement
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Dashboard ================= -->
+
+    <!-- ================= PAGE: Profile ================= -->
+    <div data-page="profile">
+      <div class="panel-grid" style="grid-template-columns:0.7fr 1.3fr;">
+        <div class="panel" style="text-align:center;">
+          <div style="width:84px;height:84px;border-radius:50%;background:var(--fl-blue-soft);color:var(--fl-blue);display:flex;align-items:center;justify-content:center;margin:0 auto var(--space-3);font-family:var(--font-display);font-size:1.7rem;font-weight:600;" id="profileAvatar">T</div>
+          <h2 style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:600;" id="profileName">Faculty Name</h2>
+          <p style="color:var(--fl-text-dim);font-size:var(--fs-sm);margin-top:.25rem;" id="profileIdLine">ID · —</p>
+          <div class="date-chip" style="margin-top:var(--space-3);display:inline-flex;">ROLE · Faculty</div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Details</h2><span>On file</span></div>
+          <table class="data-table">
+            <tbody>
+              <tr><td style="color:var(--fl-text-dim);">Department</td><td id="profileDept">Computer Science Department</td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Email</td><td id="profileEmail">—</td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Phone</td><td>+91 98xxx xxx21</td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Joined</td><td>August 2023</td></tr>
+              <tr><td style="color:var(--fl-text-dim);">Status</td><td><span class="status-pill present">Active</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Profile ================= -->
+
+    <!-- ================= PAGE: Reports ================= -->
+    <div data-page="reports">
+    <div class="stat-grid">
+        <div class="stat-card stat-card--green"><div class="stat-card__label">This term</div><div class="stat-card__value" id="reportTermPct">—</div><span class="stat-card__link">Attendance rate</span></div>
+        <div class="stat-card stat-card--blue"><div class="stat-card__label">Present days</div><div class="stat-card__value" id="reportPresentDays">—</div><span class="stat-card__link">Total present</span></div>
+        <div class="stat-card stat-card--orange"><div class="stat-card__label">Absent days</div><div class="stat-card__value" id="reportAbsentDays">—</div><span class="stat-card__link">Total absent</span></div>
+        <div class="stat-card stat-card--purple"><div class="stat-card__label">Best month</div><div class="stat-card__value" id="reportBestWeek">—</div><span class="stat-card__link">Highest rate</span></div>
+      </div>
+      <div class="table-panel">
+        <div class="panel__head">
+          <h2>Monthly breakdown</h2>
+          <button type="button" class="btn btn-ghost" id="downloadReportBtn" style="padding:.4rem .9rem;font-size:var(--fs-xs);">Download CSV</button>
+        </div>
+       <table class="data-table" id="reportTable">
+          <thead><tr><th>Month</th><th>Present</th><th>Absent</th><th>Rate</th></tr></thead>
+          <tbody id="reportTableBody">
+            <tr><td>March</td><td>21</td><td>1</td><td><span class="status-pill present">95%</span></td></tr>
+            <tr><td>April</td><td>19</td><td>3</td><td><span class="status-pill present">86%</span></td></tr>
+            <tr><td>May</td><td>18</td><td>4</td><td><span class="status-pill pending">82%</span></td></tr>
+            <tr><td>June</td><td>20</td><td>2</td><td><span class="status-pill present">91%</span></td></tr>
+            <tr><td>July</td><td>18</td><td>2</td><td><span class="status-pill present">90%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Reports ================= -->
+
+    <!-- ================= PAGE: Timetable ================= -->
+    <div data-page="timetable">
+      <div class="table-panel">
+        <div class="panel__head"><h2>Weekly timetable</h2><span>Mon – Fri</span></div>
+        <table class="data-table">
+          <thead><tr><th>Time</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th></tr></thead>
+          <tbody id="timetableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ================= /PAGE: Timetable ================= -->
+
     <!-- ================= PAGE: Tasks ================= -->
     <div data-page="tasks">
       <div class="table-panel" style="margin-bottom:var(--space-3);">
@@ -246,54 +394,7 @@
           <div class="quick-action"><span>Email me daily attendance summary</span><input type="checkbox" checked /></div>
           <div class="quick-action"><span>Notify on low attendance (below 75%)</span><input type="checkbox" /></div>
         </div>
-      </div>
-    </div>
-    <!-- ================= /PAGE: Settings ================= -->
-
-  </main>
->>>>>>> b4782e55edee0673c887b65ab52f9960fbc45c3b
-</div>
-
-<!-- ================= ONLY CLASS EDIT MODAL ================= -->
-
-<div
-  id="facultyClassModal"
-  style="
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-    background: rgba(0, 0, 0, 0.45);
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  "
->
-  <div
-    style="
-      width: 900px;
-      max-width: 100%;
-      max-height: 90vh;
-      overflow: auto;
-      background: white;
-      border-radius: 14px;
-      padding: 24px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-    "
-  >
-    <div
-      style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      "
-    >
-      <div>
-        <h2 style="margin: 0">Edit Classes</h2>
-        <p style="margin: 5px 0 0; color: #64748b">
-          Add or edit weekly classes
-        </p>
+>>>>>>> theirs
       </div>
 
       <button
