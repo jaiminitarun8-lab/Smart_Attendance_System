@@ -72,7 +72,10 @@ async function renderTasks() {
       ${role === "student"
         ? (task.completed
             ? `<span class="status-pill present">Completed</span>`
-            : `<button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:var(--fs-xs);" data-complete-task="${task.id}">Mark complete</button>`)
+            : `<div style="display:flex;align-items:center;gap:.5rem;">
+                 <input type="file" style="font-size:.7rem;color:var(--color-paper-dim);max-width:140px;" />
+                 <button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:var(--fs-xs);" data-complete-task="${task.id}">Mark complete</button>
+               </div>`)
         : `<span class="status-pill ${task.completed_count > 0 ? "present" : "pending"}">${task.completed_count} completed</span>`
       }
     </div>`).join("");
