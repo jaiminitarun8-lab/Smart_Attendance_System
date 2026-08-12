@@ -53,6 +53,7 @@ def get_timetable(section: str, db: Session = Depends(get_db)):
         {
             "id": row.id,
             "time": row.time_slot,
+            "sort_order": row.sort_order,
             "Mon": row.monday or "—",
             "Tue": row.tuesday or "—",
             "Wed": row.wednesday or "—",
