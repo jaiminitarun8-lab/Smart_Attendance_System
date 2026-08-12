@@ -1,25 +1,36 @@
 "use strict";
 
-const role = window.ATTENDAI_ROLE;   // "student" ya "teacher" — HTML file me set hota hai
+const role = window.ATTENDAI_ROLE; // "student" ya "teacher" — HTML file me set hota hai
 const params = new URLSearchParams(window.location.search);
 const userId = params.get("id") || "";
-const userName = params.get("name") || (role === "teacher" ? "Faculty" : "Student");
+const userName =
+  params.get("name") || (role === "teacher" ? "Faculty" : "Student");
 
-function capitalize(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : ""; }
+function capitalize(s) {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+}
 
 const ACTIVITY = {
   teacher: [
-    { present: true, text: "Section B marked present — 28 students", time: "2 min ago" },
+    {
+      present: true,
+      text: "Section B marked present — 28 students",
+      time: "2 min ago",
+    },
     { present: false, text: "Kabir Singh marked absent", time: "10 min ago" },
     { present: true, text: "Section A attendance submitted", time: "1 hr ago" },
-    { present: true, text: "Leave request approved · Ishita Rao", time: "3 hrs ago" }
+    {
+      present: true,
+      text: "Leave request approved · Ishita Rao",
+      time: "3 hrs ago",
+    },
   ],
   student: [
     { present: true, text: "Checked in to Mathematics", time: "9:02 AM" },
     { present: true, text: "Checked in to Physics", time: "10:31 AM" },
     { present: false, text: "Missed Chemistry", time: "Yesterday" },
-    { present: true, text: "Checked in to English", time: "Yesterday" }
-  ]
+    { present: true, text: "Checked in to English", time: "Yesterday" },
+  ],
 };
 
 /* ---------- Tasks (real backend se data aata hai) ---------- */
@@ -39,7 +50,7 @@ async function completeTask(taskId) {
   await fetch(`/api/tasks/${taskId}/complete`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ student_id: userId })
+    body: JSON.stringify({ student_id: userId }),
   });
 }
 
@@ -51,8 +62,9 @@ async function renderTasks() {
   const tasks = await fetchTasks();
 
   if (role === "student") {
-    const pending = tasks.filter(t => !t.completed).length;
-    if (countLabel) countLabel.textContent = `${pending} pending · ${tasks.length} total`;
+    const pending = tasks.filter((t) => !t.completed).length;
+    if (countLabel)
+      countLabel.textContent = `${pending} pending · ${tasks.length} total`;
   } else {
     const totalCompletions = tasks.reduce((s, t) => s + t.completed_count, 0);
     if (countLabel) countLabel.textContent = `${tasks.length} tasks assigned`;
@@ -63,25 +75,30 @@ async function renderTasks() {
     return;
   }
 
-  list.innerHTML = tasks.map(task => `
+  list.innerHTML = tasks
+    .map(
+      (task) => `
     <div class="quick-action" style="cursor:default;">
       <div>
         <div style="font-weight:600;${task.completed ? "text-decoration:line-through;color:var(--color-paper-dim);" : ""}">${task.title}</div>
         <div style="font-family:var(--font-mono);font-size:.7rem;color:var(--color-paper-dim);margin-top:.25rem;">${task.subject || ""} · Due ${task.due_date || "—"}</div>
       </div>
-      ${role === "student"
-        ? (task.completed
+      ${
+        role === "student"
+          ? task.completed
             ? `<span class="status-pill present">Completed</span>`
             : `<div style="display:flex;align-items:center;gap:.5rem;">
                  <input type="file" style="font-size:.7rem;color:var(--color-paper-dim);max-width:140px;" />
                  <button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:var(--fs-xs);" data-complete-task="${task.id}">Mark complete</button>
-               </div>`)
-        : `<span class="status-pill ${task.completed_count > 0 ? "present" : "pending"}">${task.completed_count} completed</span>`
+               </div>`
+          : `<span class="status-pill ${task.completed_count > 0 ? "present" : "pending"}">${task.completed_count} completed</span>`
       }
-    </div>`).join("");
+    </div>`,
+    )
+    .join("");
 
   if (role === "student") {
-    list.querySelectorAll("[data-complete-task]").forEach(btn => {
+    list.querySelectorAll("[data-complete-task]").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const id = Number(btn.getAttribute("data-complete-task"));
         await completeTask(id);
@@ -103,20 +120,32 @@ async function renderActivitiesPage() {
   const extracurricular = data.extracurricular || [];
 
   if (announcementsEl) {
-    announcementsEl.innerHTML = announcements.map(item => `
+    announcementsEl.innerHTML =
+      announcements
+        .map(
+          (item) => `
       <div class="activity-row">
         <span class="activity-row__dot present"></span>
         <span class="activity-row__main">${item.title}${item.description ? " — " + item.description : ""}</span>
         <span class="activity-row__meta">${item.event_date || ""}</span>
-      </div>`).join("") || `<p style="color:var(--color-paper-dim);font-size:var(--fs-sm);">Koi announcement nahi hai abhi.</p>`;
+      </div>`,
+        )
+        .join("") ||
+      `<p style="color:var(--color-paper-dim);font-size:var(--fs-sm);">Koi announcement nahi hai abhi.</p>`;
   }
   if (extraEl) {
-    extraEl.innerHTML = extracurricular.map(item => `
+    extraEl.innerHTML =
+      extracurricular
+        .map(
+          (item) => `
       <div class="activity-row">
         <span class="activity-row__dot present"></span>
         <span class="activity-row__main">${item.title}${item.description ? " — " + item.description : ""}</span>
         <span class="activity-row__meta">${item.event_date || ""}</span>
-      </div>`).join("") || `<p style="color:var(--color-paper-dim);font-size:var(--fs-sm);">Koi activity nahi hai abhi.</p>`;
+      </div>`,
+        )
+        .join("") ||
+      `<p style="color:var(--color-paper-dim);font-size:var(--fs-sm);">Koi activity nahi hai abhi.</p>`;
   }
 }
 
@@ -130,26 +159,36 @@ async function renderMarksPage() {
     const data = await res.json();
     const marks = data.marks || [];
 
-    body.innerHTML = marks.map(m => {
-      return `<tr><td>${m.subject}</td><td>${m.obtained}</td><td>${m.max_marks}</td><td>${m.percentage}%</td><td><span class="status-pill ${m.percentage >= 75 ? "present" : m.percentage >= 50 ? "pending" : "absent"}">${m.grade}</span></td></tr>`;
-    }).join("");
+    body.innerHTML = marks
+      .map((m) => {
+        return `<tr><td>${m.subject}</td><td>${m.obtained}</td><td>${m.max_marks}</td><td>${m.percentage}%</td><td><span class="status-pill ${m.percentage >= 75 ? "present" : m.percentage >= 50 ? "pending" : "absent"}">${m.grade}</span></td></tr>`;
+      })
+      .join("");
 
     if (marks.length > 0) {
-      document.getElementById("marksOverallPct").textContent = `${data.overall_pct}%`;
-      document.getElementById("marksOverallGrade").textContent = data.overall_grade;
-      document.getElementById("marksBestSubject").textContent = data.best_subject;
-      document.getElementById("marksBestScore").textContent = `${data.best_pct}%`;
-      document.getElementById("marksWorstSubject").textContent = data.worst_subject;
-      document.getElementById("marksWorstScore").textContent = `${data.worst_pct}%`;
+      document.getElementById("marksOverallPct").textContent =
+        `${data.overall_pct}%`;
+      document.getElementById("marksOverallGrade").textContent =
+        data.overall_grade;
+      document.getElementById("marksBestSubject").textContent =
+        data.best_subject;
+      document.getElementById("marksBestScore").textContent =
+        `${data.best_pct}%`;
+      document.getElementById("marksWorstSubject").textContent =
+        data.worst_subject;
+      document.getElementById("marksWorstScore").textContent =
+        `${data.worst_pct}%`;
     }
   } else {
     const res = await fetch(`/api/marks/section/B`);
     const data = await res.json();
     const marks = data.marks || [];
 
-    body.innerHTML = marks.map(m => {
-      return `<tr><td>${m.student_name}</td><td>${m.obtained}</td><td>${m.max_marks}</td><td>${m.percentage}%</td><td><span class="status-pill ${m.percentage >= 75 ? "present" : m.percentage >= 50 ? "pending" : "absent"}">${m.grade}</span></td></tr>`;
-    }).join("");
+    body.innerHTML = marks
+      .map((m) => {
+        return `<tr><td>${m.student_name}</td><td>${m.obtained}</td><td>${m.max_marks}</td><td>${m.percentage}%</td><td><span class="status-pill ${m.percentage >= 75 ? "present" : m.percentage >= 50 ? "pending" : "absent"}">${m.grade}</span></td></tr>`;
+      })
+      .join("");
   }
 }
 
@@ -176,13 +215,17 @@ async function renderLeavePage() {
       return;
     }
 
-    historyBody.innerHTML = leaves.map(lv => `
+    historyBody.innerHTML = leaves
+      .map(
+        (lv) => `
       <tr>
         <td>${lv.reason || "—"}</td>
         <td>${lv.start_date || "—"}</td>
         <td>${lv.end_date || "—"}</td>
         <td><span class="status-pill ${lv.status === "approved" ? "present" : lv.status === "rejected" ? "absent" : "pending"}">${capitalize(lv.status)}</span></td>
-      </tr>`).join("");
+      </tr>`,
+      )
+      .join("");
   } else {
     const body = document.getElementById("leaveRequestsBody");
     if (!body) return;
@@ -206,7 +249,9 @@ async function renderLeavePage() {
       return;
     }
 
-    body.innerHTML = leaves.map(lv => `
+    body.innerHTML = leaves
+      .map(
+        (lv) => `
       <tr>
         <td>${lv.student_name || lv.user_id}</td>
         <td>${[lv.class_name, lv.section, lv.department].filter(Boolean).join(" / ") || "—"}</td>
@@ -214,25 +259,39 @@ async function renderLeavePage() {
         <td>${lv.start_date || "—"}</td>
         <td>${lv.end_date || "—"}</td>
         <td><span class="status-pill ${lv.status === "approved" ? "present" : lv.status === "rejected" ? "absent" : "pending"}">${capitalize(lv.status)}</span></td>
-        <td>${lv.status === "pending"
-          ? `<button type="button" class="btn btn-primary" style="padding:.35rem .8rem;font-size:var(--fs-xs);" data-approve-leave="${lv.id}">Approve</button>
+        <td>${
+          lv.status === "pending"
+            ? `<button type="button" class="btn btn-primary" style="padding:.35rem .8rem;font-size:var(--fs-xs);" data-approve-leave="${lv.id}">Approve</button>
              <button type="button" style="padding:.35rem .8rem;font-size:var(--fs-xs);margin-left:.4rem;border:1px solid #e15554;color:#e15554;border-radius:8px;background:transparent;font-weight:600;cursor:pointer;" data-reject-leave="${lv.id}">Reject</button>`
-          : "—"}</td>
-      </tr>`).join("");
+            : "—"
+        }</td>
+      </tr>`,
+      )
+      .join("");
 
-    body.querySelectorAll("[data-approve-leave]").forEach(btn => {
+    body.querySelectorAll("[data-approve-leave]").forEach((btn) => {
       btn.addEventListener("click", async () => {
-        await fetch(`/api/leave/${btn.getAttribute("data-approve-leave")}/approve`, {
-          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({})
-        });
+        await fetch(
+          `/api/leave/${btn.getAttribute("data-approve-leave")}/approve`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}),
+          },
+        );
         renderLeavePage();
       });
     });
-    body.querySelectorAll("[data-reject-leave]").forEach(btn => {
+    body.querySelectorAll("[data-reject-leave]").forEach((btn) => {
       btn.addEventListener("click", async () => {
-        await fetch(`/api/leave/${btn.getAttribute("data-reject-leave")}/reject`, {
-          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({})
-        });
+        await fetch(
+          `/api/leave/${btn.getAttribute("data-reject-leave")}/reject`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}),
+          },
+        );
         renderLeavePage();
       });
     });
@@ -249,7 +308,9 @@ async function renderBellCount() {
     const count = data.unread_count || 0;
     el.textContent = count;
     el.style.display = count > 0 ? "flex" : "none";
-  } catch (e) { /* ignore */ }
+  } catch (e) {
+    /* ignore */
+  }
 }
 
 async function renderNotificationsPage() {
@@ -268,16 +329,23 @@ async function renderNotificationsPage() {
     return;
   }
 
-  list.innerHTML = items.map(n => `
+  list.innerHTML = items
+    .map(
+      (n) => `
     <div class="activity-row" data-notif-id="${n.id}" style="${n.is_read ? "opacity:.55;" : ""}cursor:pointer;">
       <span class="activity-row__dot ${n.is_read ? "" : "absent"}"></span>
       <span class="activity-row__main">${n.title}</span>
       <span class="activity-row__meta">${n.created_at ? new Date(n.created_at).toLocaleDateString() : ""}</span>
-    </div>`).join("");
+    </div>`,
+    )
+    .join("");
 
-  list.querySelectorAll("[data-notif-id]").forEach(row => {
+  list.querySelectorAll("[data-notif-id]").forEach((row) => {
     row.addEventListener("click", async () => {
-      await fetch(`/api/notifications/${row.getAttribute("data-notif-id")}/read`, { method: "POST" });
+      await fetch(
+        `/api/notifications/${row.getAttribute("data-notif-id")}/read`,
+        { method: "POST" },
+      );
       renderNotificationsPage();
       renderBellCount();
     });
@@ -294,17 +362,25 @@ async function renderBarChart() {
 
   if (role === "student") {
     try {
-      const res = await fetch(`/api/attendance/student/${encodeURIComponent(userId)}/summary`);
+      const res = await fetch(
+        `/api/attendance/student/${encodeURIComponent(userId)}/summary`,
+      );
       const data = await res.json();
       if (data.weekly) values = data.weekly;
-    } catch (e) { /* keep zeros on failure */ }
+    } catch (e) {
+      /* keep zeros on failure */
+    }
   }
 
-  el.innerHTML = values.map((v, i) => `
+  el.innerHTML = values
+    .map(
+      (v, i) => `
     <div class="bar-chart__col">
       <div class="bar-chart__bar" style="height:${Math.max(v, 4)}%"></div>
       <span class="bar-chart__day">${days[i]}</span>
-    </div>`).join("");
+    </div>`,
+    )
+    .join("");
 }
 
 async function renderAttendanceLog() {
@@ -315,20 +391,27 @@ async function renderAttendanceLog() {
   const riskDeltaEl = document.getElementById("riskStatusDelta");
   if (!body && !monthPctEl) return;
 
-  const res = await fetch(`/api/attendance/student/${encodeURIComponent(userId)}/summary`);
+  const res = await fetch(
+    `/api/attendance/student/${encodeURIComponent(userId)}/summary`,
+  );
   const data = await res.json();
 
   if (monthPctEl) monthPctEl.textContent = `${data.percentage ?? 0}%`;
-  if (monthDeltaEl) monthDeltaEl.textContent = `${data.present_days ?? 0} of ${data.total_classes ?? 0} days present`;
+  if (monthDeltaEl)
+    monthDeltaEl.textContent = `${data.present_days ?? 0} of ${data.total_classes ?? 0} days present`;
   if (riskValueEl) {
     const risk = data.risk_level || "green";
     riskValueEl.textContent = risk.toUpperCase();
-    riskValueEl.className = "stat-card__value " + (risk === "red" ? "absent" : risk === "yellow" ? "pending" : "present");
+    riskValueEl.className =
+      "stat-card__value " +
+      (risk === "red" ? "absent" : risk === "yellow" ? "pending" : "present");
   }
   if (riskDeltaEl) {
     const risk = data.risk_level || "green";
-    if (risk === "red") riskDeltaEl.textContent = "Low attendance - please improve";
-    else if (risk === "yellow") riskDeltaEl.textContent = "Attendance needs attention";
+    if (risk === "red")
+      riskDeltaEl.textContent = "Low attendance - please improve";
+    else if (risk === "yellow")
+      riskDeltaEl.textContent = "Attendance needs attention";
     else riskDeltaEl.textContent = "Attendance is healthy";
   }
 
@@ -371,12 +454,16 @@ async function renderAttendanceLog() {
   if (body) {
     const rows = data.recent_log || [];
     body.innerHTML = rows.length
-      ? rows.map(r => `
+      ? rows
+          .map(
+            (r) => `
         <tr>
           <td>${r.subject || "—"}</td>
           <td>${r.date}</td>
           <td><span class="status-pill ${r.status === "present" ? "present" : "absent"}">${capitalize(r.status)}</span></td>
-        </tr>`).join("")
+        </tr>`,
+          )
+          .join("")
       : `<tr><td colspan="3" style="color:var(--color-paper-dim);">Abhi tak koi attendance record nahi hai.</td></tr>`;
   }
 }
@@ -390,9 +477,10 @@ async function renderReportsPage() {
   const bestWeekEl = document.getElementById("reportBestWeek");
   if (!tableBody && !termPctEl) return;
 
-  const endpoint = role === "student"
-    ? `/api/attendance/student/${encodeURIComponent(userId)}/monthly`
-    : `/api/attendance/section/B/monthly`;
+  const endpoint =
+    role === "student"
+      ? `/api/attendance/student/${encodeURIComponent(userId)}/monthly`
+      : `/api/attendance/section/B/monthly`;
 
   const res = await fetch(endpoint);
   const data = await res.json();
@@ -405,13 +493,17 @@ async function renderReportsPage() {
 
   if (tableBody) {
     tableBody.innerHTML = months.length
-      ? months.map(m => `
+      ? months
+          .map(
+            (m) => `
         <tr>
           <td>${m.month}</td>
           <td>${m.present}</td>
           <td>${m.absent}</td>
           <td><span class="status-pill ${m.rate >= 75 ? "present" : m.rate >= 50 ? "pending" : "absent"}">${m.rate}%</span></td>
-        </tr>`).join("")
+        </tr>`,
+          )
+          .join("")
       : `<tr><td colspan="4" style="color:var(--color-paper-dim);">Abhi tak koi attendance record nahi hai.</td></tr>`;
   }
 }
@@ -425,13 +517,95 @@ async function renderTimetable() {
   const data = await res.json();
   const rows = data.rows || [];
 
+  const timetableMap = new Map(rows.map((r) => [r.id, r]));
+
   body.innerHTML = rows.length
-    ? rows.map(row => `
+    ? rows
+        .map(
+          (row) => `
       <tr>
         <td style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--color-paper-dim);">${row.time}</td>
         <td>${row.Mon}</td><td>${row.Tue}</td><td>${row.Wed}</td><td>${row.Thu}</td><td>${row.Fri}</td>
-      </tr>`).join("")
-    : `<tr><td colspan="6" style="color:var(--color-paper-dim);">Timetable abhi set nahi hui hai.</td></tr>`;
+        ${role === "teacher" ? `<td><button type="button" class="btn btn-ghost" data-edit-row="${row.id}">Edit</button></td>` : ""}
+      </tr>`,
+        )
+        .join("")
+    : `<tr><td colspan="${role === "teacher" ? "7" : "6"}" style="color:var(--color-paper-dim);">Timetable abhi set nahi hui hai.</td></tr>`;
+
+  if (role === "teacher") {
+    body.querySelectorAll("[data-edit-row]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const rowId = Number(btn.getAttribute("data-edit-row"));
+        const row = timetableMap.get(rowId);
+        if (row) openTimetableEditor(row);
+      });
+    });
+  }
+}
+
+function openTimetableEditor(row) {
+  const form = document.getElementById("timetableEditForm");
+  if (!form) return;
+
+  form.style.display = "grid";
+  document.getElementById("editRowId").value = row.id;
+  document.getElementById("editTimeSlot").value = row.time || "";
+  document.getElementById("editSortOrder").value = row.sort_order ?? "";
+  document.getElementById("editMon").value = row.Mon === "—" ? "" : row.Mon;
+  document.getElementById("editTue").value = row.Tue === "—" ? "" : row.Tue;
+  document.getElementById("editWed").value = row.Wed === "—" ? "" : row.Wed;
+  document.getElementById("editThu").value = row.Thu === "—" ? "" : row.Thu;
+  document.getElementById("editFri").value = row.Fri === "—" ? "" : row.Fri;
+}
+
+function closeTimetableEditor() {
+  const form = document.getElementById("timetableEditForm");
+  if (!form) return;
+  form.style.display = "none";
+}
+
+async function saveTimetableEdit() {
+  const rowId = Number(document.getElementById("editRowId").value);
+  if (!rowId) {
+    alert("Koi timetable row select nahi hui hai.");
+    return;
+  }
+
+  const body = {
+    time_slot: document.getElementById("editTimeSlot").value.trim(),
+    monday: document.getElementById("editMon").value.trim() || null,
+    tuesday: document.getElementById("editTue").value.trim() || null,
+    wednesday: document.getElementById("editWed").value.trim() || null,
+    thursday: document.getElementById("editThu").value.trim() || null,
+    friday: document.getElementById("editFri").value.trim() || null,
+    sort_order: document.getElementById("editSortOrder").value
+      ? Number(document.getElementById("editSortOrder").value)
+      : null,
+  };
+
+  const res = await fetch(`/api/timetable/${rowId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!data.success) {
+    alert(data.message || "Update failed.");
+    return;
+  }
+
+  alert(data.message || "Timetable updated.");
+  closeTimetableEditor();
+  renderTimetable();
+}
+
+function initializeTimetableEditorControls() {
+  const timetableEditSaveBtn = document.getElementById("timetableSaveBtn");
+  const timetableEditCancelBtn = document.getElementById("timetableCancelBtn");
+  if (timetableEditSaveBtn)
+    timetableEditSaveBtn.addEventListener("click", saveTimetableEdit);
+  if (timetableEditCancelBtn)
+    timetableEditCancelBtn.addEventListener("click", closeTimetableEditor);
 }
 
 /* ---------- Donut chart + stat cards (faculty dashboard only) ---------- */
@@ -472,7 +646,8 @@ async function renderDonut() {
   const presentDeltaEl = document.getElementById("facStudentsPresentDelta");
   if (presentDeltaEl) presentDeltaEl.textContent = `out of ${total} enrolled`;
   const todayAttendanceEl = document.getElementById("facTodayAttendanceValue");
-  if (todayAttendanceEl) todayAttendanceEl.textContent = `${data.avg_attendance_pct ?? 0}%`;
+  if (todayAttendanceEl)
+    todayAttendanceEl.textContent = `${data.avg_attendance_pct ?? 0}%`;
 }
 
 async function renderPendingApprovalsCount() {
@@ -491,7 +666,9 @@ async function renderRoster() {
   const subjectInput = document.getElementById("rosterSubject");
   const subject = (subjectInput?.value || "General").trim() || "General";
 
-  const res = await fetch(`/api/attendance/section/B/today?subject=${encodeURIComponent(subject)}`);
+  const res = await fetch(
+    `/api/attendance/section/B/today?subject=${encodeURIComponent(subject)}`,
+  );
   const data = await res.json();
   const roster = data.roster || [];
 
@@ -503,7 +680,9 @@ async function renderRoster() {
     return;
   }
 
-  body.innerHTML = roster.map(s => `
+  body.innerHTML = roster
+    .map(
+      (s) => `
     <tr>
       <td>${s.name}</td>
       <td>${s.roll_no || s.student_id}</td>
@@ -512,9 +691,11 @@ async function renderRoster() {
         <button type="button" class="btn btn-primary" style="padding:.3rem .7rem;font-size:var(--fs-xs);" data-mark="${s.student_id}" data-status="present">Present</button>
         <button type="button" style="padding:.3rem .7rem;font-size:var(--fs-xs);margin-left:.3rem;border:1px solid #e15554;color:#e15554;border-radius:8px;background:transparent;font-weight:600;cursor:pointer;" data-mark="${s.student_id}" data-status="absent">Absent</button>
       </td>
-    </tr>`).join("");
+    </tr>`,
+    )
+    .join("");
 
-  body.querySelectorAll("[data-mark]").forEach(btn => {
+  body.querySelectorAll("[data-mark]").forEach((btn) => {
     btn.addEventListener("click", async () => {
       await fetch("/api/attendance/mark", {
         method: "POST",
@@ -534,43 +715,83 @@ async function renderRoster() {
 }
 
 function renderActivity() {
-  document.getElementById("activityList").innerHTML = ACTIVITY[role].map(item => `
+  document.getElementById("activityList").innerHTML = ACTIVITY[role]
+    .map(
+      (item) => `
     <div class="activity-row">
       <span class="activity-row__dot ${item.present ? "present" : "absent"}"></span>
       <span class="activity-row__main">${item.text}</span>
       <span class="activity-row__meta">${item.time}</span>
-    </div>`).join("");
+    </div>`,
+    )
+    .join("");
 }
 
 function populateProfile() {
-  document.getElementById("profileAvatar").textContent = userName.charAt(0).toUpperCase();
+  document.getElementById("profileAvatar").textContent = userName
+    .charAt(0)
+    .toUpperCase();
   document.getElementById("profileName").textContent = userName;
-  document.getElementById("profileIdLine").textContent = `ID · ${userId || "—"}`;
-  document.getElementById("profileEmail").textContent = `${userId.toLowerCase().replace(/[^a-z0-9]/g, "")}@attendai.edu`;
+  document.getElementById("profileIdLine").textContent =
+    `ID · ${userId || "—"}`;
+  document.getElementById("profileEmail").textContent =
+    `${userId.toLowerCase().replace(/[^a-z0-9]/g, "")}@attendai.edu`;
 }
 
 function populateTopbar() {
   document.getElementById("dashName").textContent = userName;
-  document.getElementById("dashDate").textContent = new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
-  document.getElementById("profileChipAvatar").textContent = userName.charAt(0).toUpperCase();
+  document.getElementById("dashDate").textContent =
+    new Date().toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    });
+  document.getElementById("profileChipAvatar").textContent = userName
+    .charAt(0)
+    .toUpperCase();
   document.getElementById("profileChipName").textContent = userName;
 }
 
 function showPage(page) {
-  document.querySelectorAll("[data-page]").forEach(el => el.classList.toggle("is-page-active", el.dataset.page === page));
+  document
+    .querySelectorAll("[data-page]")
+    .forEach((el) =>
+      el.classList.toggle("is-page-active", el.dataset.page === page),
+    );
   const titles = {
-    dashboard: [`Welcome back, ${userName}`, `${capitalize(role)} sign-in · ${document.getElementById("dashDate").textContent}`],
+    dashboard: [
+      `Welcome back, ${userName}`,
+      `${capitalize(role)} sign-in · ${document.getElementById("dashDate").textContent}`,
+    ],
     profile: ["My profile", "Personal and account details on file"],
     reports: ["Attendance reports", "Term summary and monthly breakdown"],
     timetable: ["Weekly timetable", "Your scheduled classes, Monday to Friday"],
-    tasks: ["Tasks", role === "student" ? "Tasks assigned by your faculty" : "Tasks you've assigned to your class"],
-    activities: ["Other activities", "Announcements, events, and extra-curriculars"],
-    marks: ["Marks", role === "student" ? "Your subject-wise performance" : "Manage marks for your class"],
-    leave: ["Leave management", role === "student" ? "Apply for leave and track your requests" : "Review and approve student leave requests"],
+    tasks: [
+      "Tasks",
+      role === "student"
+        ? "Tasks assigned by your faculty"
+        : "Tasks you've assigned to your class",
+    ],
+    activities: [
+      "Other activities",
+      "Announcements, events, and extra-curriculars",
+    ],
+    marks: [
+      "Marks",
+      role === "student"
+        ? "Your subject-wise performance"
+        : "Manage marks for your class",
+    ],
+    leave: [
+      "Leave management",
+      role === "student"
+        ? "Apply for leave and track your requests"
+        : "Review and approve student leave requests",
+    ],
     notifications: ["Notifications", "Recent alerts and updates"],
     challenges: ["Challenges", "Launch and monitor live attendance challenges"],
     students: ["Students", "Section B student list and attendance"],
-    settings: ["Settings", "Account and notification preferences"]
+    settings: ["Settings", "Account and notification preferences"],
   };
   const [title, subtitle] = titles[page] || titles.dashboard;
   const titleEl = document.getElementById("pageTitle");
@@ -581,8 +802,10 @@ function showPage(page) {
 
 function downloadReportCsv() {
   const table = document.getElementById("reportTable");
-  const rows = Array.from(table.querySelectorAll("tr")).map(tr =>
-    Array.from(tr.querySelectorAll("th,td")).map(cell => `"${cell.textContent.trim()}"`).join(",")
+  const rows = Array.from(table.querySelectorAll("tr")).map((tr) =>
+    Array.from(tr.querySelectorAll("th,td"))
+      .map((cell) => `"${cell.textContent.trim()}"`)
+      .join(","),
   );
   const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
@@ -612,12 +835,15 @@ document.addEventListener("DOMContentLoaded", () => {
   renderAttendanceLog();
   renderRoster();
   renderPendingApprovalsCount();
+  initializeTimetableEditorControls();
   showPage("dashboard");
 
-  document.querySelectorAll("[data-nav-link]").forEach(link => {
-    link.addEventListener("click", e => {
+  document.querySelectorAll("[data-nav-link]").forEach((link) => {
+    link.addEventListener("click", (e) => {
       e.preventDefault();
-      document.querySelectorAll("[data-nav-link]").forEach(l => l.classList.remove("is-active"));
+      document
+        .querySelectorAll("[data-nav-link]")
+        .forEach((l) => l.classList.remove("is-active"));
       link.classList.add("is-active");
       const page = link.getAttribute("data-page");
       if (page) showPage(page);
@@ -632,7 +858,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const assignTaskForm = document.getElementById("assignTaskForm");
   if (assignTaskForm) {
-    assignTaskForm.addEventListener("submit", async e => {
+    assignTaskForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const title = document.getElementById("taskTitle").value.trim();
       const subject = document.getElementById("taskSubject").value.trim();
@@ -642,7 +868,13 @@ document.addEventListener("DOMContentLoaded", () => {
       await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, subject, due_date: dueDate, section: "B", assigned_by: userId })
+        body: JSON.stringify({
+          title,
+          subject,
+          due_date: dueDate,
+          section: "B",
+          assigned_by: userId,
+        }),
       });
       renderTasks();
       assignTaskForm.reset();
@@ -651,7 +883,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const leaveApplyForm = document.getElementById("leaveApplyForm");
   if (leaveApplyForm) {
-    leaveApplyForm.addEventListener("submit", async e => {
+    leaveApplyForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const startDate = document.getElementById("leaveFromDate").value;
       const endDate = document.getElementById("leaveToDate").value;
@@ -661,7 +893,13 @@ document.addEventListener("DOMContentLoaded", () => {
       await fetch("/api/leave", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, user_type: "student", start_date: startDate, end_date: endDate, reason })
+        body: JSON.stringify({
+          user_id: userId,
+          user_type: "student",
+          start_date: startDate,
+          end_date: endDate,
+          reason,
+        }),
       });
       renderLeavePage();
       leaveApplyForm.reset();
