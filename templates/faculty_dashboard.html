@@ -700,7 +700,91 @@
           </div>
           <div class="table-panel" style="margin-top: var(--space-4)">
             <div class="panel__head">
-              <h2>Edit timetable row</h2>
+              <h2>Add class row</h2>
+              <span>Section B</span>
+            </div>
+            <form
+              id="timetableAddForm"
+              style="
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: var(--space-3);
+                margin-top: var(--space-3);
+              "
+            >
+              <div class="field-light">
+                <label for="addTimeSlot">Time slot</label>
+                <input
+                  type="text"
+                  id="addTimeSlot"
+                  placeholder="e.g. 9:00 AM"
+                  required
+                />
+              </div>
+              <div class="field-light">
+                <label for="addSortOrder">Sort order</label>
+                <input type="number" id="addSortOrder" placeholder="0" />
+              </div>
+              <div class="field-light">
+                <label for="addMon">Monday</label>
+                <input
+                  type="text"
+                  id="addMon"
+                  placeholder="Subject or Free period"
+                />
+              </div>
+              <div class="field-light">
+                <label for="addTue">Tuesday</label>
+                <input
+                  type="text"
+                  id="addTue"
+                  placeholder="Subject or Free period"
+                />
+              </div>
+              <div class="field-light">
+                <label for="addWed">Wednesday</label>
+                <input
+                  type="text"
+                  id="addWed"
+                  placeholder="Subject or Free period"
+                />
+              </div>
+              <div class="field-light">
+                <label for="addThu">Thursday</label>
+                <input
+                  type="text"
+                  id="addThu"
+                  placeholder="Subject or Free period"
+                />
+              </div>
+              <div class="field-light">
+                <label for="addFri">Friday</label>
+                <input
+                  type="text"
+                  id="addFri"
+                  placeholder="Subject or Free period"
+                />
+              </div>
+              <div
+                style="
+                  display: flex;
+                  gap: var(--space-2);
+                  align-items: flex-end;
+                "
+              >
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="timetableAddBtn"
+                >
+                  Add class row
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="table-panel" style="margin-top: var(--space-4)">
+            <div class="panel__head">
+              <h2>Edit class schedule</h2>
               <span>Section B</span>
             </div>
             <form

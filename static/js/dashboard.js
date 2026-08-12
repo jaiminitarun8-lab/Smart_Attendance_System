@@ -526,7 +526,7 @@ async function renderTimetable() {
       <tr>
         <td style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--color-paper-dim);">${row.time}</td>
         <td>${row.Mon}</td><td>${row.Tue}</td><td>${row.Wed}</td><td>${row.Thu}</td><td>${row.Fri}</td>
-        ${role === "teacher" ? `<td><button type="button" class="btn btn-ghost" data-edit-row="${row.id}">Edit</button></td>` : ""}
+        ${role === "teacher" ? `<td><button type="button" class="btn btn-ghost" data-edit-row="${row.id}">Edit class</button></td>` : ""}
       </tr>`,
         )
         .join("")
@@ -599,13 +599,52 @@ async function saveTimetableEdit() {
   renderTimetable();
 }
 
+async function addTimetableRow() {
+  const timeSlot = document.getElementById("addTimeSlot").value.trim();
+  if (!timeSlot) {
+    alert("Please enter a time slot.");
+    return;
+  }
+
+  const body = {
+    section: "B",
+    time_slot: timeSlot,
+    monday: document.getElementById("addMon").value.trim() || null,
+    tuesday: document.getElementById("addTue").value.trim() || null,
+    wednesday: document.getElementById("addWed").value.trim() || null,
+    thursday: document.getElementById("addThu").value.trim() || null,
+    friday: document.getElementById("addFri").value.trim() || null,
+    sort_order: document.getElementById("addSortOrder").value
+      ? Number(document.getElementById("addSortOrder").value)
+      : null,
+  };
+
+  const res = await fetch("/api/timetable", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!data.success) {
+    alert(data.message || "Failed to add timetable row.");
+    return;
+  }
+
+  alert(data.message || "Timetable row added.");
+  document.getElementById("timetableAddForm").reset();
+  renderTimetable();
+}
+
 function initializeTimetableEditorControls() {
   const timetableEditSaveBtn = document.getElementById("timetableSaveBtn");
   const timetableEditCancelBtn = document.getElementById("timetableCancelBtn");
+  const timetableAddBtn = document.getElementById("timetableAddBtn");
   if (timetableEditSaveBtn)
     timetableEditSaveBtn.addEventListener("click", saveTimetableEdit);
   if (timetableEditCancelBtn)
     timetableEditCancelBtn.addEventListener("click", closeTimetableEditor);
+  if (timetableAddBtn)
+    timetableAddBtn.addEventListener("click", addTimetableRow);
 }
 
 /* ---------- Donut chart + stat cards (faculty dashboard only) ---------- */
